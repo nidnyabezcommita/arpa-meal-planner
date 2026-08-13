@@ -412,6 +412,31 @@ async function startServer() {
     }
   });
 
+  app.patch('/api/planner/:id/date', (req, res) => {
+    const familyId = parseFamilyId(req);
+    const id = parseIdParam(req.params.id);
+    if (id === null) {
+      return res.status(400).json({ error: 'Invalid id' });
+    }
+
+    const dateStr = typeof req.body?.date === 'string' ? req.body.date.trim() : '';
+    if (!dateStr) {
+      return res.status(400).json({ error: 'date is required' });
+    }
+
+    try {
+      const result = db
+        .prepare('UPDATE planner SET date = ? WHERE id = ? AND family_id = ?')
+        .run(dateStr, id, familyId);
+      if (result.changes === 0) {
+        return res.status(404).json({ error: 'Planner entry not found' });
+      }
+      res.json({ success: true });
+    } catch {
+      res.status(500).json({ error: 'Failed to move planner entry' });
+    }
+  });
+
   app.patch('/api/planner/:id/servings', (req, res) => {
     const familyId = parseFamilyId(req);
     const id = parseIdParam(req.params.id);

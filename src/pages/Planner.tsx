@@ -124,14 +124,52 @@ export default function Planner() {
 
   const handleDragStart = (e: React.DragEvent, mealId: number) => {
     e.dataTransfer.setData('mealId', mealId.toString());
+    e.dataTransfer.effectAllowed = 'copy';
+  };
+
+  const handlePlannerDragStart = (e: React.DragEvent, plannerId: number) => {
+    e.dataTransfer.setData('plannerId', plannerId.toString());
+    e.dataTransfer.effectAllowed = 'move';
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
 
+  const handleMovePlannerItem = async (plannerId: number, dateStr: string) => {
+    const previous = plannerItems;
+    const movingItem = plannerItems.find((item) => item.id === plannerId);
+    if (!movingItem || movingItem.date === dateStr) return;
+
+    setPlannerItems((prev) =>
+      prev.map((item) => (item.id === plannerId ? { ...item, date: dateStr } : item))
+    );
+
+    try {
+      const res = await apiFetch(`/api/planner/${plannerId}/date`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: dateStr }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error((body as { error?: string }).error || 'Failed to move meal');
+      }
+    } catch (error) {
+      setPlannerItems(previous);
+      console.error('Failed to move meal in planner', error);
+      alert(error instanceof Error ? error.message : 'Failed to move meal');
+    }
+  };
+
   const handleDrop = (e: React.DragEvent, dateStr: string) => {
     e.preventDefault();
+    const plannerId = e.dataTransfer.getData('plannerId');
+    if (plannerId) {
+      handleMovePlannerItem(parseInt(plannerId, 10), dateStr);
+      return;
+    }
+
     const mealId = e.dataTransfer.getData('mealId');
     if (mealId) {
       handleAddMeal(dateStr, parseInt(mealId));
@@ -156,7 +194,7 @@ export default function Planner() {
             Weekly Planner
           </h1>
           <p className="text-on-surface-variant mt-1 font-medium">
-            Drag recipes from the discovery panel onto your week.
+            Drag recipes onto your week, or move planned meals between days.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -237,7 +275,10 @@ export default function Planner() {
                   dayMealsWithImg.map(({ planner, meal }) => (
                     <article
                       key={planner.id}
-                      className="aspect-[4/5] rounded-[1.5rem] overflow-hidden relative group/card shadow-sm hover:shadow-md transition-all bg-surface-container"
+                      draggable
+                      onDragStart={(e) => handlePlannerDragStart(e, planner.id)}
+                      className="aspect-[4/5] rounded-[1.5rem] overflow-hidden relative group/card shadow-sm hover:shadow-md transition-all bg-surface-container cursor-grab active:cursor-grabbing"
+                      aria-label={`Move ${planner.meal_name} to another day`}
                     >
                       {meal?.image_url ? (
                         <img
