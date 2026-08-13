@@ -28,6 +28,8 @@ export default function Planner() {
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [discoverySearch, setDiscoverySearch] = useState('');
   const [discoveryFilter, setDiscoveryFilter] = useState<string | null>(null);
+  const [draggingPlannerId, setDraggingPlannerId] = useState<number | null>(null);
+  const [activeDropDate, setActiveDropDate] = useState<string | null>(null);
 
   const [, bumpPrefs] = useReducer((n: number) => n + 1, 0);
   useEffect(() => {
@@ -125,15 +127,39 @@ export default function Planner() {
   const handleDragStart = (e: React.DragEvent, mealId: number) => {
     e.dataTransfer.setData('mealId', mealId.toString());
     e.dataTransfer.effectAllowed = 'copy';
+    setActiveDropDate(null);
   };
 
   const handlePlannerDragStart = (e: React.DragEvent, plannerId: number) => {
     e.dataTransfer.setData('plannerId', plannerId.toString());
     e.dataTransfer.effectAllowed = 'move';
+
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    e.dataTransfer.setDragImage(card, e.clientX - rect.left, e.clientY - rect.top);
+    setDraggingPlannerId(plannerId);
+    setActiveDropDate(null);
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragEnd = () => {
+    setDraggingPlannerId(null);
+    setActiveDropDate(null);
+  };
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>, dateStr: string) => {
     e.preventDefault();
+    setActiveDropDate(dateStr);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>, dateStr: string) => {
+    e.preventDefault();
+    if (activeDropDate !== dateStr) setActiveDropDate(dateStr);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    const relatedTarget = e.relatedTarget;
+    if (relatedTarget instanceof Node && e.currentTarget.contains(relatedTarget)) return;
+    setActiveDropDate(null);
   };
 
   const handleMovePlannerItem = async (plannerId: number, dateStr: string) => {
@@ -164,6 +190,7 @@ export default function Planner() {
 
   const handleDrop = (e: React.DragEvent, dateStr: string) => {
     e.preventDefault();
+    setActiveDropDate(null);
     const plannerId = e.dataTransfer.getData('plannerId');
     if (plannerId) {
       handleMovePlannerItem(parseInt(plannerId, 10), dateStr);
@@ -248,9 +275,15 @@ export default function Planner() {
             return (
               <div
                 key={dateStr}
-                onDragOver={handleDragOver}
+                onDragEnter={(e) => handleDragEnter(e, dateStr)}
+                onDragOver={(e) => handleDragOver(e, dateStr)}
+                onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, dateStr)}
-                className="flex flex-col gap-3 group"
+                className={`relative flex flex-col gap-3 rounded-[1.5rem] p-2 -m-2 transition-colors duration-200 group ${
+                  activeDropDate === dateStr
+                    ? 'bg-primary-container/15 ring-2 ring-primary/50 shadow-[0_0_0_4px_rgba(45,106,79,0.08)]'
+                    : ''
+                }`}
               >
                 <div className="text-center py-2">
                   <p
@@ -269,6 +302,11 @@ export default function Planner() {
                   >
                     {format(day, 'd')}
                   </p>
+                  {activeDropDate === dateStr && (
+                    <span className="mt-1 inline-flex rounded-full bg-primary px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-on-primary">
+                      Drop meal here
+                    </span>
+                  )}
                 </div>
 
                 {dayMealsWithImg.length > 0 ? (
@@ -277,14 +315,18 @@ export default function Planner() {
                       key={planner.id}
                       draggable
                       onDragStart={(e) => handlePlannerDragStart(e, planner.id)}
-                      className="aspect-[4/5] rounded-[1.5rem] overflow-hidden relative group/card shadow-sm hover:shadow-md transition-all bg-surface-container cursor-grab active:cursor-grabbing"
+                      onDragEnd={handleDragEnd}
+                      className={`aspect-[4/5] rounded-[1.5rem] overflow-hidden relative group/card shadow-sm hover:shadow-md transition-all bg-surface-container cursor-grab active:cursor-grabbing select-none ${
+                        draggingPlannerId === planner.id ? 'opacity-50 scale-[0.98]' : ''
+                      }`}
                       aria-label={`Move ${planner.meal_name} to another day`}
                     >
                       {meal?.image_url ? (
                         <img
                           src={meal.image_url}
                           alt={meal.name}
-                          className="w-full h-full object-cover group-hover/card:grayscale-0 grayscale-[0.15] transition-all duration-500"
+                          draggable={false}
+                          className="w-full h-full object-cover pointer-events-none group-hover/card:grayscale-0 grayscale-[0.15] transition-all duration-500"
                           referrerPolicy="no-referrer"
                         />
                       ) : (
@@ -450,6 +492,7 @@ export default function Planner() {
                   key={meal.id}
                   draggable
                   onDragStart={(e) => handleDragStart(e, meal.id)}
+                  onDragEnd={handleDragEnd}
                   className="group flex items-center gap-3 p-2 bg-surface-container-lowest rounded-2xl hover:shadow-md transition-all cursor-grab active:cursor-grabbing"
                 >
                   <div className="h-14 w-14 rounded-xl overflow-hidden shrink-0 bg-surface-container-high dark:bg-surface-container-highest">
@@ -457,6 +500,7 @@ export default function Planner() {
                       <img
                         src={meal.image_url}
                         alt={meal.name}
+                        draggable={false}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         referrerPolicy="no-referrer"
                       />
