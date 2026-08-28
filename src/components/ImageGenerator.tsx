@@ -11,6 +11,7 @@ import {
   showAiProviderPickerInModals,
 } from '../lib/ai-settings';
 import { aiJobModelLabel, useAiJobQueue } from '../context/AiJobQueueContext';
+import { useTranslation } from 'react-i18next';
 
 interface ImageGeneratorProps {
   meal: Meal;
@@ -19,6 +20,7 @@ interface ImageGeneratorProps {
 }
 
 export default function ImageGenerator({ meal, onClose, onSuccess }: ImageGeneratorProps) {
+  const { t } = useTranslation();
   const { runWithAiJob } = useAiJobQueue();
   const mountedRef = useRef(true);
   useEffect(() => {
@@ -49,7 +51,7 @@ export default function ImageGenerator({ meal, onClose, onSuccess }: ImageGenera
 
   const handleGenerate = async () => {
     if (provider !== 'gemini') {
-      setError('Image generation currently supports only the Google provider.');
+      setError(t('imageGenerator.errors.onlyGoogle'));
       return;
     }
     setLoading(true);
@@ -59,7 +61,7 @@ export default function ImageGenerator({ meal, onClose, onSuccess }: ImageGenera
       await runWithAiJob(
         {
           kind: 'generate-meal-image',
-          title: 'Generate meal image',
+          title: t('imageGenerator.title'),
           relatedLabel: meal.name,
           providerId: provider,
           modelLabel: aiJobModelLabel(provider, model),
@@ -87,10 +89,10 @@ export default function ImageGenerator({ meal, onClose, onSuccess }: ImageGenera
           });
           const data = await res.json().catch(() => ({}));
           if (!res.ok) {
-            throw new Error(data.error || 'Image generation failed');
+            throw new Error(data.error || t('imageGenerator.errors.default'));
           }
           if (!data.imageUrl) {
-            throw new Error('No image returned');
+            throw new Error(t('imageGenerator.errors.noImage'));
           }
           const imageUrl = data.imageUrl as string;
           if (mountedRef.current) {
@@ -100,7 +102,7 @@ export default function ImageGenerator({ meal, onClose, onSuccess }: ImageGenera
         },
       );
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : t('imageGenerator.errors.default'));
     } finally {
       setLoading(false);
     }
@@ -126,10 +128,10 @@ export default function ImageGenerator({ meal, onClose, onSuccess }: ImageGenera
             </div>
             <div>
               <h2 className="text-xl font-display font-extrabold text-primary-container dark:text-primary-fixed-dim tracking-tight">
-                Generate Image
+                {t('imageGenerator.title')}
               </h2>
               <p className="text-xs text-on-surface-variant mt-0.5">
-                Powered by Nano Banana Pro
+                {t('imageGenerator.subtitle')}
               </p>
             </div>
           </div>
@@ -143,7 +145,7 @@ export default function ImageGenerator({ meal, onClose, onSuccess }: ImageGenera
 
         <div className="px-6 pb-2 space-y-4">
           <p className="text-sm text-on-surface-variant leading-relaxed">
-            Generate a custom illustration for{' '}
+            {t('imageGenerator.text')}{' '}
             <strong className="text-on-surface font-display font-bold">
               {meal.name}
             </strong>
@@ -162,22 +164,22 @@ export default function ImageGenerator({ meal, onClose, onSuccess }: ImageGenera
             </div>
           ) : (
             <p className="text-xs text-on-surface-variant">
-              Meal images always use Google. Model follows your Gemini settings when applicable; otherwise the Google default applies.
+              {t('imageGenerator.googleText')}
             </p>
           )}
 
           <div>
             <label className="block text-[11px] font-display font-bold uppercase tracking-widest text-outline mb-2">
-              Image quality
+              {t('imageGenerator.fields.quality.label')}
             </label>
             <select
               value={size}
               onChange={(e) => setSize(e.target.value)}
               className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/30 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/30 text-on-surface"
             >
-              <option value="1K">1K · Standard</option>
-              <option value="2K">2K · High Quality</option>
-              <option value="4K">4K · Ultra HQ</option>
+              <option value="1K">{t('imageGenerator.fields.quality.options.1K')}</option>
+              <option value="2K">{t('imageGenerator.fields.quality.options.2K')}</option>
+              <option value="4K">{t('imageGenerator.fields.quality.options.4K')}</option>
             </select>
           </div>
 
@@ -193,7 +195,7 @@ export default function ImageGenerator({ meal, onClose, onSuccess }: ImageGenera
             onClick={onClose}
             className="px-5 py-2.5 text-on-surface-variant font-display font-semibold text-sm rounded-full hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors"
           >
-            Cancel
+            {t('imageGenerator.buttons.cancel')}
           </button>
           <button
             onClick={handleGenerate}
@@ -203,10 +205,10 @@ export default function ImageGenerator({ meal, onClose, onSuccess }: ImageGenera
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Generating...
+                {t('imageGenerator.buttons.loading')}
               </>
             ) : (
-              'Generate Image'
+              t('imageGenerator.buttons.generate')
             )}
           </button>
         </div>

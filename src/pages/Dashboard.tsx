@@ -33,12 +33,12 @@ import {
   type AiJobNavigationState,
 } from '../lib/ai-job-nav-state';
 import { loadDefaultServings, loadWeekStartsOn } from '../lib/preferences';
-
-const DAY_LABELS_MON = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-const DAY_LABELS_SUN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+import { useTranslation } from 'react-i18next';
+import { dateLocaleFor } from '../lib/date-locale';
 
 export default function Dashboard() {
   const location = useLocation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [meals, setMeals] = useState<Meal[]>([]);
   const [plannerItems, setPlannerItems] = useState<PlannerItem[]>([]);
@@ -128,7 +128,10 @@ export default function Dashboard() {
 
   const weekStartsOn = loadWeekStartsOn();
   const weekStart = startOfWeek(selectedDate, { weekStartsOn });
-  const dayLabels = weekStartsOn === 0 ? DAY_LABELS_SUN : DAY_LABELS_MON;
+  const dateLocale = dateLocaleFor(i18n.resolvedLanguage);
+  const dayLabels = Array.from({ length: 7 }, (_, index) =>
+    format(addDays(weekStart, index), 'EEEE', { locale: dateLocale }),
+  );
   const weekEnd = addDays(weekStart, 6);
   const weekDates = Array.from({ length: 7 }).map((_, i) => format(addDays(weekStart, i), 'yyyy-MM-dd'));
 
@@ -191,7 +194,7 @@ export default function Dashboard() {
   const pantryAlerts = pantryItems.filter((item) => item.amount <= 1).slice(0, 3);
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this meal?')) return;
+    if (!confirm(t('dashboard.confirmDelete'))) return;
     try {
       await apiFetch(`/api/meals/${id}`, { method: 'DELETE' });
       fetchMeals();
@@ -211,10 +214,13 @@ export default function Dashboard() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h1 className="text-3xl md:text-4xl xl:text-5xl font-display font-extrabold tracking-tight text-primary-container dark:text-primary-fixed-dim">
-            Welcome back, Gourmet.
+            {t('dashboard.pageTitle')}
           </h1>
           <p className="text-on-surface-variant mt-2 font-medium">
-            Nutrition and meals for {format(weekStart, 'MMM d')} - {format(weekEnd, 'MMM d')}.
+            {t('dashboard.pageSubtitle', {
+              from: format(weekStart, 'MMM d', { locale: dateLocale }),
+              to: format(weekEnd, 'MMM d', { locale: dateLocale }),
+            })}
           </p>
         </div>
         <div className="flex flex-wrap gap-3 items-center">
@@ -222,17 +228,18 @@ export default function Dashboard() {
             <button
               onClick={() => setSelectedDate(addDays(selectedDate, -7))}
               className="p-2 rounded-full hover:bg-surface-container-lowest transition-colors active:scale-90"
-              aria-label="Previous week"
+              aria-label={t('app.buttons.previousWeek')}
             >
               <ChevronLeft className="w-4 h-4 text-on-surface-variant" />
             </button>
             <div className="px-3 text-sm font-display font-semibold text-on-surface whitespace-nowrap">
-              {format(weekStart, 'MMM d')} - {format(weekEnd, 'MMM d')}
+              {format(weekStart, 'MMM d', { locale: dateLocale })} -{' '}
+              {format(weekEnd, 'MMM d', { locale: dateLocale })}
             </div>
             <button
               onClick={() => setSelectedDate(addDays(selectedDate, 7))}
               className="p-2 rounded-full hover:bg-surface-container-lowest transition-colors active:scale-90"
-              aria-label="Next week"
+              aria-label={t('app.buttons.nextWeek')}
             >
               <ChevronRight className="w-4 h-4 text-on-surface-variant" />
             </button>
@@ -241,14 +248,14 @@ export default function Dashboard() {
             onClick={() => setSelectedDate(new Date())}
             className="px-4 py-3 bg-surface-container-highest hover:bg-surface-container-high text-on-surface font-display font-semibold text-sm rounded-full transition-colors active:scale-95"
           >
-            Current Week
+            {t('dashboard.buttons.currentWeek')}
           </button>
           <button
             onClick={() => setIsImportModalOpen(true)}
             className="px-5 py-3 bg-surface-container-highest hover:bg-surface-container-high text-on-surface font-display font-semibold text-sm rounded-full flex items-center gap-2 transition-colors active:scale-95"
           >
             <Globe className="w-4 h-4" />
-            Import Recipe
+            {t('dashboard.buttons.importRecipe')}
           </button>
           <button
             onClick={() => {
@@ -258,7 +265,7 @@ export default function Dashboard() {
             className="px-5 py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary font-display font-semibold text-sm rounded-full flex items-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-sm"
           >
             <Plus className="w-4 h-4" />
-            Add Meal
+            {t('dashboard.buttons.addMeal')}
           </button>
         </div>
       </div>
@@ -269,23 +276,23 @@ export default function Dashboard() {
         <div className="col-span-12 lg:col-span-8 space-y-8">
           {/* Nutrition bento */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-            <MetricCard label="Calories" value={dailyCalories.toLocaleString()} unit="kcal / daily" />
-            <MetricCard label="Protein" value={`${dailyProtein}g`} barPct={proteinPct} barClass="bg-primary" />
-            <MetricCard label="Carbs" value={`${dailyCarbs}g`} barPct={carbsPct} barClass="bg-secondary-container" />
-            <MetricCard label="Fat" value={`${dailyFat}g`} barPct={fatPct} barClass="bg-tertiary-container" />
+            <MetricCard label={t('dashboard.widgets.calories.title')} value={dailyCalories.toLocaleString()} unit={t('dashboard.widgets.calories.subtitle')} />
+            <MetricCard label={t('dashboard.widgets.protein.title')} value={`${dailyProtein}${t('dashboard.widgets.protein.units')}`} barPct={proteinPct} barClass="bg-primary" />
+            <MetricCard label={t('dashboard.widgets.carbs.title')} value={`${dailyCarbs}${t('dashboard.widgets.protein.units')}`} barPct={carbsPct} barClass="bg-secondary-container" />
+            <MetricCard label={t('dashboard.widgets.fat.title')} value={`${dailyFat}${t('dashboard.widgets.protein.units')}`} barPct={fatPct} barClass="bg-tertiary-container" />
           </div>
 
           {/* Weekly Overview - horizontal scroll */}
           <section className="space-y-5">
             <div className="flex items-center justify-between">
               <h2 className="text-xl md:text-2xl font-display font-bold text-primary-container dark:text-primary-fixed-dim">
-                Weekly Overview
+                {t('dashboard.weeklyOverview.title')}
               </h2>
               <Link
                 to="/planner"
                 className="text-sm font-display font-semibold text-primary-container dark:text-primary-fixed-dim hover:underline inline-flex items-center gap-1"
               >
-                View Calendar <ArrowRight className="w-4 h-4" />
+                {t('dashboard.weeklyOverview.links.viewCalendar')} <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
             {previewMeals.length > 0 ? (
@@ -315,7 +322,7 @@ export default function Dashboard() {
                             : 'bg-surface-container-highest text-primary-container'
                         }`}
                       >
-                        {dayLabels[dayIndex] ?? 'Today'}
+                        {dayLabels[dayIndex] ?? t('dashboard.weeklyOverview.today')}
                       </div>
                     </div>
                     <div className="p-5">
@@ -330,7 +337,7 @@ export default function Dashboard() {
                         )}
                         <span className="text-[10px] px-2 py-0.5 bg-surface-container-high text-on-surface-variant rounded-full font-bold inline-flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          {meal.ingredients.length} ingredients / {effectiveServings} servings
+                          {t('dashboard.weeklyOverview.count', {ingredients: meal.ingredients.length, servings: effectiveServings})}
                         </span>
                       </div>
                       <button
@@ -338,7 +345,7 @@ export default function Dashboard() {
                         onClick={() => setDetailMeal(meal)}
                         className="text-xs font-display font-bold text-primary-container dark:text-primary-fixed-dim inline-flex items-center gap-1 group/btn"
                       >
-                        Recipe Details
+                        {t('dashboard.weeklyOverview.links.recipeDetails')}
                         <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-1" />
                       </button>
                     </div>
@@ -347,7 +354,7 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="rounded-[2rem] border border-dashed border-outline-variant p-10 text-center text-outline">
-                Add meals to your planner to see your weekly overview here.
+                {t('dashboard.weeklyOverview.empty')}
               </div>
             )}
           </section>
@@ -358,12 +365,12 @@ export default function Dashboard() {
           <div className="bg-surface-container-low rounded-[2rem] p-6 lg:p-7">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-display font-bold text-primary-container dark:text-primary-fixed-dim">
-                Grocery List
+                {t('dashboard.grocery.title')}
               </h3>
               <Link
                 to="/grocery"
                 className="p-2 bg-surface-container-lowest rounded-full text-primary-container dark:text-primary-fixed-dim shadow-sm transition-transform active:scale-95"
-                aria-label="Open grocery list"
+                aria-label={t('dashboard.grocery.links.open')}
               >
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
@@ -384,14 +391,14 @@ export default function Dashboard() {
               </ul>
             ) : (
               <p className="text-sm text-on-surface-variant">
-                No grocery items needed for this week.
+                {t('dashboard.grocery.empty')}
               </p>
             )}
           </div>
 
           <div className="bg-surface-container-low rounded-[2rem] p-6 lg:p-7">
             <h3 className="text-lg font-display font-bold text-primary-container dark:text-primary-fixed-dim mb-5">
-              Pantry Stock Alerts
+              {t('dashboard.pantry.title')}
             </h3>
             {pantryAlerts.length > 0 ? (
               <div className="space-y-3">
@@ -409,10 +416,10 @@ export default function Dashboard() {
                     )}
                     <div className="min-w-0">
                       <p className="text-sm font-bold text-on-surface leading-tight">
-                        Low on {item.name}
+                        {t('dashboard.pantry.alert.title', {name: item.name})}
                       </p>
                       <p className="text-xs text-on-surface-variant mt-0.5">
-                        Only {item.amount} {item.measure} remaining
+                        {t('dashboard.pantry.alert.amount', {amount: item.amount, measure: item.measure})}
                       </p>
                     </div>
                   </div>
@@ -420,7 +427,7 @@ export default function Dashboard() {
               </div>
             ) : (
               <p className="text-sm text-on-surface-variant">
-                Pantry levels look healthy.
+                {t('dashboard.pantry.empty')}
               </p>
             )}
           </div>
@@ -432,17 +439,17 @@ export default function Dashboard() {
         <div className="absolute inset-0 bg-gradient-to-tr from-primary via-primary-container to-primary-container/70 opacity-90" />
         <div className="relative z-10 px-8 lg:px-12 py-10 lg:py-14 max-w-2xl">
           <h3 className="text-2xl md:text-3xl xl:text-4xl font-display font-extrabold leading-tight mb-3">
-            Master the Art of Meal Prep.
+            {t('dashboard.promo.title')}
           </h3>
           <p className="text-on-primary-container/80 text-base md:text-lg mb-7 max-w-xl">
-            Our AI analyzes your pantry and cravings to generate a bespoke weekly menu that reduces waste and elevates your kitchen.
+            {t('dashboard.promo.text')}
           </p>
           <Link
             to="/planner"
             className="inline-flex items-center gap-2 px-6 py-3.5 bg-on-primary-container text-primary-container font-display font-bold rounded-full shadow-lg transition-transform hover:scale-[1.02] active:scale-95"
           >
             <Sparkles className="w-4 h-4" />
-            Optimize My Weekly Plan
+            {t('dashboard.promo.button')}
           </Link>
         </div>
       </section>
@@ -451,10 +458,10 @@ export default function Dashboard() {
       <div className="space-y-5">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <h2 className="text-xl md:text-2xl font-display font-bold text-primary-container dark:text-primary-fixed-dim">
-            Recipe Library
+            {t('dashboard.recipes.title')}
           </h2>
           <span className="text-sm text-on-surface-variant">
-            {filteredMeals.length} {filteredMeals.length === 1 ? 'meal' : 'meals'}
+            {filteredMeals.length} {filteredMeals.length === 1 ? t('dashboard.recipes.meal') : t('dashboard.recipes.meals')}
           </span>
         </div>
 
@@ -462,7 +469,7 @@ export default function Dashboard() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-outline w-5 h-5" />
           <input
             type="text"
-            placeholder="Search recipes, ingredients..."
+            placeholder={t('dashboard.recipes.search.placeholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-12 pr-4 py-3.5 bg-surface-container-low rounded-full focus:outline-none focus:ring-2 focus:ring-primary/30 text-on-surface placeholder:text-outline"
@@ -477,7 +484,7 @@ export default function Dashboard() {
                 : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high'
             }`}
           >
-            All
+            {t('dashboard.recipes.all')}
           </button>
           {tags.map((tag) => (
             <button
@@ -510,10 +517,10 @@ export default function Dashboard() {
           <div className="text-center py-14 bg-surface-container-low rounded-[2rem]">
             <Utensils className="w-12 h-12 text-outline mx-auto mb-3" />
             <h3 className="text-lg font-display font-bold text-on-surface">
-              No meals found
+              {t('dashboard.recipes.empty.title')}
             </h3>
             <p className="text-on-surface-variant mt-1">
-              Try adjusting your search or add a new meal.
+              {t('dashboard.recipes.empty.subtitle')}
             </p>
           </div>
         )}

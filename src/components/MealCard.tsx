@@ -12,6 +12,7 @@ import { Meal } from '../types';
 import ImageGenerator from './ImageGenerator';
 import MealDetailsModal from './MealDetailsModal';
 import { getMealBaseServings, getScaledMealNutritionTotals } from '../lib/meal-scaling';
+import { useTranslation } from 'react-i18next';
 
 interface MealCardProps {
   meal: Meal;
@@ -20,6 +21,7 @@ interface MealCardProps {
 }
 
 export default function MealCard({ meal, onDelete, onEdit }: MealCardProps) {
+  const { t } = useTranslation();
   const [showMenu, setShowMenu] = useState(false);
   const [showImageGen, setShowImageGen] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -46,7 +48,7 @@ export default function MealCard({ meal, onDelete, onEdit }: MealCardProps) {
           ) : (
             <div className="text-outline flex flex-col items-center gap-2">
               <ImageIcon className="w-8 h-8 opacity-40" />
-              <span className="text-sm font-display font-medium">No image</span>
+              <span className="text-sm font-display font-medium">{t('mealCard.noImage')}</span>
             </div>
           )}
 
@@ -72,7 +74,7 @@ export default function MealCard({ meal, onDelete, onEdit }: MealCardProps) {
                     }}
                     className="w-full text-left px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low dark:hover:bg-surface-container-highest inline-flex items-center gap-2"
                   >
-                    <Edit2 className="w-4 h-4" /> Edit Meal
+                    <Edit2 className="w-4 h-4" /> {t('mealCard.menu.edit')}
                   </button>
                   <button
                     onClick={(e) => {
@@ -82,7 +84,7 @@ export default function MealCard({ meal, onDelete, onEdit }: MealCardProps) {
                     }}
                     className="w-full text-left px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low dark:hover:bg-surface-container-highest inline-flex items-center gap-2"
                   >
-                    <ImageIcon className="w-4 h-4" /> Generate Image
+                    <ImageIcon className="w-4 h-4" /> {t('mealCard.menu.generateImage')}
                   </button>
                   <button
                     onClick={(e) => {
@@ -92,7 +94,7 @@ export default function MealCard({ meal, onDelete, onEdit }: MealCardProps) {
                     }}
                     className="w-full text-left px-4 py-2.5 text-sm text-secondary hover:bg-secondary/10 inline-flex items-center gap-2"
                   >
-                    <Trash2 className="w-4 h-4" /> Delete
+                    <Trash2 className="w-4 h-4" /> {t('mealCard.menu.delete')}
                   </button>
                 </div>
               )}
@@ -118,18 +120,18 @@ export default function MealCard({ meal, onDelete, onEdit }: MealCardProps) {
             <div className="flex flex-wrap gap-2 mb-4 text-xs font-display font-semibold">
               <div className="bg-primary-container/10 text-primary-container dark:bg-primary-fixed-dim/15 dark:text-primary-fixed-dim px-2.5 py-1.5 rounded-full inline-flex items-center gap-1">
                 <Flame className="w-3 h-3" />
-                {totalCalories.toFixed(0)} kcal
+                {totalCalories.toFixed(0)} {t('mealCard.kcal')}
               </div>
               <div className="bg-surface-container-high text-on-surface-variant px-2.5 py-1.5 rounded-full inline-flex items-center gap-1">
                 <Clock className="w-3 h-3" />
-                {meal.ingredients.length} items / {servings} servings
+                {t('mealCard.count', {ingredients: meal.ingredients.length, servings})}
               </div>
             </div>
           )}
 
           <div className="flex-1">
             <h4 className="text-[10px] font-display font-bold text-outline uppercase tracking-widest mb-2">
-              Ingredients
+              {t('mealCard.ingredients')}
             </h4>
             <ul className="space-y-1.5">
               {meal.ingredients.slice(0, 4).map((ing, i) => (
@@ -145,7 +147,7 @@ export default function MealCard({ meal, onDelete, onEdit }: MealCardProps) {
               ))}
               {meal.ingredients.length > 4 && (
                 <li className="text-sm text-outline italic pt-1">
-                  + {meal.ingredients.length - 4} more
+                  + {meal.ingredients.length - 4} {t('mealCard.more')}
                 </li>
               )}
             </ul>

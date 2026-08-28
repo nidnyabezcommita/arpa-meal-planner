@@ -44,6 +44,8 @@ import {
 } from '../lib/units';
 import { getScaledIngredients, resolveEffectiveServings } from '../lib/meal-scaling';
 import { loadWeekStartsOn } from '../lib/preferences';
+import { useTranslation } from 'react-i18next';
+import { dateLocaleFor } from '../lib/date-locale';
 
 interface GroceryItem {
   name: string;
@@ -179,12 +181,13 @@ function isVagueUnit(unit: string): boolean {
   return token === 'be' || token === 'bebu' || token === 'bebu (be)' || token === 'pinch' || token === 'pinches';
 }
 
-function formatMeasureLabel(amount: number, measure: string): string {
+function formatMeasureLabel(measure: string, unitLabel: string): string {
   if (measure !== 'Unit') return measure;
-  return Math.abs(amount) === 1 ? 'Unit' : 'Units';
+  return unitLabel;
 }
 
 export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
+  const { t, i18n } = useTranslation();
   const [meals, setMeals] = useState<Meal[]>([]);
   const [plannerItems, setPlannerItems] = useState<PlannerItem[]>([]);
   const [pantryItems, setPantryItems] = useState<PantryItem[]>([]);
@@ -270,6 +273,15 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
   const weekStartsOn = loadWeekStartsOn();
   const startDate = startOfWeek(selectedDate, { weekStartsOn });
   const endDate = addDays(startDate, 6);
+  const dateLocale = dateLocaleFor(i18n.resolvedLanguage);
+  const fallbackCategoryLabels: Record<string, string> = {
+    'Dairy & Cold': t('grocery.categories.dairyCold'),
+    'Fresh Produce': t('grocery.categories.freshProduce'),
+    'Meat & Seafood': t('grocery.categories.meatSeafood'),
+    Bakery: t('grocery.categories.bakery'),
+    Pantry: t('grocery.categories.pantry'),
+    Frozen: t('grocery.categories.frozen'),
+  };
 
   const weekDates = Array.from({ length: 7 }).map((_, i) =>
     format(addDays(startDate, i), 'yyyy-MM-dd'),
@@ -490,16 +502,19 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
     setMergeFeedback(null);
 
     if (selectedMergeNames.length < 2) {
-      setMergeError('Select at least 2 names to merge.');
+      setMergeError(t('grocery.mergePopup.errors.selectTwo'));
       return;
     }
     if (!mergeTargetName || !selectedMergeNames.includes(mergeTargetName)) {
-      setMergeError('Select a valid target name from the selected items.');
+      setMergeError(t('grocery.mergePopup.errors.selectTarget'));
       return;
     }
 
     const shouldMerge = confirm(
-      `Merge ${selectedMergeNames.length} names into "${mergeTargetName}"? This updates meal ingredients and pantry names.`,
+      t('grocery.mergePopup.confirm', {
+        count: selectedMergeNames.length,
+        target: mergeTargetName,
+      }),
     );
     if (!shouldMerge) return;
 
@@ -517,20 +532,25 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
       if (!res.ok) {
         if (res.status === 404) {
           throw new Error(
-            'Merge endpoint is unavailable (404). Restart the dev server so the latest backend routes load.',
+            t('grocery.mergePopup.errors.endpoint'),
           );
         }
-        throw new Error((data as { error?: string }).error || 'Failed to merge names');
+        throw new Error((data as { error?: string }).error || t('grocery.mergePopup.errors.default'));
       }
 
       await Promise.all([fetchMeals(), fetchPlanner(), fetchPantry()]);
 
-      setMergeFeedback(`Merged ${selectedMergeNames.length} names into "${mergeTargetName}".`);
+      setMergeFeedback(
+        t('grocery.mergePopup.success', {
+          count: selectedMergeNames.length,
+          target: mergeTargetName,
+        }),
+      );
       setSelectedMergeNames([]);
       setMergeTargetName('');
       setShowMergePopup(false);
     } catch (error) {
-      setMergeError(error instanceof Error ? error.message : 'Failed to merge names');
+      setMergeError(error instanceof Error ? error.message : t('grocery.mergePopup.errors.default'));
     } finally {
       setIsMerging(false);
     }
@@ -580,11 +600,9 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
       await runWithAiJob(
         {
           kind: 'grocery-group',
-          title: 'Smart-group groceries',
+          title: t('grocery.smartGroupPopup.jobTitle'),
           relatedLabel:
-            itemsToGroup.length === 1
-              ? 'Grocery list (1 item)'
-              : `Grocery list (${itemsToGroup.length} items)`,
+            t('grocery.smartGroupPopup.itemCount', { count: itemsToGroup.length }),
           providerId: provider,
           modelLabel: aiJobModelLabel(provider, model),
           languageLabel: aiJobLanguageLabel(responseLanguage),
@@ -611,7 +629,7 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
             setCategories((prev) => ({ ...prev, ...patch }));
             return merged;
           }
-          throw new Error(data.error || 'Grouping request failed');
+          throw new Error(data.error || t('grocery.smartGroupPopup.errors.request'));
         },
       );
     } catch (error: unknown) {
@@ -678,11 +696,9 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
         errObj?.status === 'RESOURCE_EXHAUSTED' ||
         errObj?.error?.status === 'RESOURCE_EXHAUSTED'
       ) {
-        alert(
-          "Bebü Bot is a bit busy right now (rate limit reached). I've applied some basic grouping for you!",
-        );
+        alert(t('grocery.smartGroupPopup.errors.rateLimit'));
       } else {
-        alert("Something went wrong while grouping. I've tried my best to categorize common items.");
+        alert(t('grocery.smartGroupPopup.errors.fallback'));
       }
     } finally {
       setIsGrouping(false);
@@ -723,34 +739,41 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
 
   const exportToPDF = () => {
     const doc = new jsPDF();
+    const pdfDatePattern = i18n.resolvedLanguage?.startsWith('tr') ? 'dd.MM.yyyy' : 'MMM d, yyyy';
 
     doc.setFontSize(20);
-    doc.text('Grocery List', 14, 22);
+    doc.text(t('grocery.pdf.title'), 14, 22);
 
     doc.setFontSize(12);
     doc.setTextColor(100);
     doc.text(
-      `For week of ${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d, yyyy')}`,
+      t('grocery.pdf.week', {
+        from: format(startDate, pdfDatePattern, { locale: dateLocale }),
+        to: format(endDate, pdfDatePattern, { locale: dateLocale }),
+      }),
       14,
       30,
     );
 
     const tableData = sortedItems.map(([, item]) => [
-      item.checked ? 'Yes' : 'No',
+      item.checked ? t('grocery.pdf.yes') : t('grocery.pdf.no'),
       item.name,
-      `${formatAmountLabel(item.amount)} ${formatMeasureLabel(item.amount, item.measure)}`,
+      `${formatAmountLabel(item.amount)} ${formatMeasureLabel(
+        item.measure,
+        t('grocery.measure.unit', { count: item.amount }),
+      )}`,
     ]);
 
     autoTable(doc, {
       startY: 40,
-      head: [['Got it?', 'Item', 'Amount']],
+      head: [[t('grocery.pdf.headers.done'), t('grocery.pdf.headers.item'), t('grocery.pdf.headers.amount')]],
       body: tableData,
       theme: 'grid',
       headStyles: { fillColor: [6, 95, 70] },
       alternateRowStyles: { fillColor: [248, 243, 236] },
     });
 
-    doc.save(`Grocery-List-${format(startDate, 'yyyy-MM-dd')}.pdf`);
+    doc.save(`${t('grocery.pdf.filename')}-${format(startDate, 'yyyy-MM-dd')}.pdf`);
   };
 
   return (
@@ -759,29 +782,30 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl md:text-4xl font-display font-extrabold tracking-tight text-primary-container dark:text-primary-fixed-dim">
-            {activeTab === 'list' ? 'Grocery List' : 'Pantry Inventory'}
+            {activeTab === 'list' ? t('grocery.title') : t('pantry.title')}
           </h1>
           <p className="text-on-surface-variant mt-1 font-medium">
             {activeTab === 'list'
-              ? 'Pantry items are excluded automatically.'
-              : 'Track stock to keep your grocery list accurate.'}
+              ? t('grocery.subtitle')
+              : t('pantry.subtitle')}
           </p>
         </div>
         <div className="flex items-center gap-2 bg-surface-container-low rounded-full p-1.5">
           <button
             onClick={() => setSelectedDate(addDays(selectedDate, -7))}
             className="p-2 rounded-full hover:bg-surface-container-lowest transition-colors active:scale-90"
-            aria-label="Previous week"
+            aria-label={t('app.buttons.previousWeek')}
           >
             <ChevronLeft className="w-4 h-4 text-on-surface-variant" />
           </button>
           <div className="px-3 text-sm font-display font-semibold text-on-surface whitespace-nowrap">
-            {format(startDate, 'MMM d')} – {format(endDate, 'MMM d')}
+            {format(startDate, 'MMM d', { locale: dateLocale })} –{' '}
+            {format(endDate, 'MMM d', { locale: dateLocale })}
           </div>
           <button
             onClick={() => setSelectedDate(addDays(selectedDate, 7))}
             className="p-2 rounded-full hover:bg-surface-container-lowest transition-colors active:scale-90"
-            aria-label="Next week"
+            aria-label={t('app.buttons.nextWeek')}
           >
             <ChevronRight className="w-4 h-4 text-on-surface-variant" />
           </button>
@@ -794,16 +818,16 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
           <Info className="w-6 h-6" />
         </div>
         <div className="flex-1 space-y-1">
-          <h3 className="font-display font-bold text-lg leading-tight">Pantry Sync Active</h3>
+          <h3 className="font-display font-bold text-lg leading-tight">{t('grocery.banner.title')}</h3>
           <p className="text-on-primary-container/80 text-sm font-medium">
-            Pantry items are excluded from grocery calculations for a cleaner shopping experience.
+            {t('grocery.banner.subtitle')}
           </p>
         </div>
         <Link
           to={activeTab === 'list' ? '/pantry' : '/grocery'}
           className="md:ml-auto self-start md:self-center text-sm font-display font-bold underline underline-offset-4 hover:text-white transition-colors"
         >
-          {activeTab === 'list' ? 'Adjust Pantry' : 'View Grocery'}
+          {activeTab === 'list' ? t('grocery.banner.link') : t('pantry.banner.link')}
         </Link>
       </section>
 
@@ -812,42 +836,42 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
           <section className="lg:col-span-2 space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <h2 className="text-2xl font-display font-extrabold tracking-tight text-on-surface">
-                Grocery List
+                {t('grocery.title2')}
               </h2>
               <div className="flex flex-wrap gap-2">
                 {sortedItems.length > 0 && (
                   <>
                     <button className="px-4 py-2 bg-surface-container-high rounded-full text-xs font-display font-bold text-on-surface-variant inline-flex items-center gap-2 hover:bg-surface-container-highest transition-colors">
                       <Filter className="w-3.5 h-3.5" />
-                      All Categories
+                      {t('grocery.buttons.all')}
                     </button>
                     <button className="px-4 py-2 bg-surface-container-high rounded-full text-xs font-display font-bold text-on-surface-variant inline-flex items-center gap-2 hover:bg-surface-container-highest transition-colors">
                       <ArrowDownUp className="w-3.5 h-3.5" />
-                      Sort
+                      {t('grocery.buttons.sort')}
                     </button>
                     <div className="relative">
                       <button
                         onClick={() => setShowMergePopup((prev) => !prev)}
                         className="px-4 py-2 bg-surface-container-high rounded-full text-xs font-display font-bold text-on-surface-variant inline-flex items-center gap-2 hover:bg-surface-container-highest transition-colors"
                       >
-                        Merge Similar Items
+                        {t('grocery.buttons.merge')}
                       </button>
                       {showMergePopup && (
                         <div className="absolute right-0 mt-2 z-20 w-[360px] max-w-[90vw] rounded-2xl border border-outline-variant/20 bg-surface-container-low p-3 shadow-xl space-y-3">
                           <div className="flex items-center justify-between">
                             <h4 className="text-sm font-display font-bold text-on-surface">
-                              Merge Similar Names
+                              {t('grocery.mergePopup.title')}
                             </h4>
                             <button
                               onClick={() => setShowMergePopup(false)}
                               className="text-xs font-display font-semibold text-on-surface-variant hover:underline"
                             >
-                              Close
+                              {t('grocery.mergePopup.buttons.close')}
                             </button>
                           </div>
                           {mergeSuggestionGroups.length === 0 ? (
                             <p className="text-xs text-on-surface-variant">
-                              No close matches found in this week&apos;s grocery names.
+                              {t('grocery.mergePopup.empty')}
                             </p>
                           ) : (
                             <div className="max-h-64 overflow-y-auto space-y-2 pr-1">
@@ -858,13 +882,13 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                                 >
                                   <div className="flex items-center justify-between gap-2">
                                     <span className="text-[11px] font-display font-bold uppercase tracking-wider text-on-surface-variant">
-                                      Suggested Group
+                                      {t('grocery.mergePopup.suggestedGroup')}
                                     </span>
                                     <button
                                       onClick={() => selectSuggestedGroup(group.names)}
                                       className="text-xs font-display font-semibold text-primary hover:underline"
                                     >
-                                      Select All
+                                      {t('grocery.mergePopup.selectAll')}
                                     </button>
                                   </div>
                                   <div className="space-y-1">
@@ -889,13 +913,13 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                           )}
                           <div className="space-y-2 rounded-xl border border-outline-variant/15 p-2">
                             <span className="text-[11px] font-display font-bold uppercase tracking-wider text-on-surface-variant">
-                              Add Items Manually
+                              {t('grocery.mergePopup.fields.addItem.label')}
                             </span>
                             <input
                               type="text"
                               value={manualMergeSearch}
                               onChange={(e) => setManualMergeSearch(e.target.value)}
-                              placeholder="Search names (e.g. Butter)"
+                              placeholder={t('grocery.mergePopup.fields.addItem.placeholder')}
                               className="w-full px-3 py-2 rounded-xl bg-surface-container-lowest border border-outline-variant/30 text-sm"
                             />
                             <div className="max-h-28 overflow-y-auto space-y-1 pr-1">
@@ -911,21 +935,21 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                                 ))
                               ) : (
                                 <p className="text-xs text-on-surface-variant">
-                                  No additional matches.
+                                  {t('grocery.mergePopup.noMatches')}
                                 </p>
                               )}
                             </div>
                           </div>
                           <div className="space-y-1">
                             <label className="text-[11px] font-display font-bold uppercase tracking-wider text-on-surface-variant">
-                              Merge Into
+                              {t('grocery.mergePopup.fields.mergeInto.label')}
                             </label>
                             <select
                               value={mergeTargetName}
                               onChange={(e) => setMergeTargetName(e.target.value)}
                               className="w-full px-3 py-2 rounded-xl bg-surface-container-lowest border border-outline-variant/30 text-sm"
                             >
-                              <option value="">Select target name</option>
+                              <option value="">{t('grocery.mergePopup.fields.mergeInto.placeholder')}</option>
                               {selectedMergeNames.map((name) => (
                                 <option key={name} value={name}>
                                   {name}
@@ -940,7 +964,7 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                             disabled={isMerging || selectedMergeNames.length < 2 || !mergeTargetName}
                             className="w-full px-3 py-2 rounded-full text-xs font-display font-semibold bg-primary text-on-primary disabled:opacity-50"
                           >
-                            {isMerging ? 'Merging...' : 'Apply Merge'}
+                            {isMerging ? t('grocery.mergePopup.buttons.merging') : t('grocery.mergePopup.buttons.apply')}
                           </button>
                         </div>
                       )}
@@ -955,7 +979,7 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                         ) : (
                           <Sparkles className="w-3.5 h-3.5" />
                         )}
-                        Smart Group
+                        {t('grocery.buttons.group')}
                       </button>
                       {showSmartGroupPopup && (
                         <div className="absolute right-0 mt-2 z-20 w-[320px] max-w-[85vw] rounded-2xl border border-outline-variant/20 bg-surface-container-low p-3 shadow-xl">
@@ -968,7 +992,7 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                             />
                           ) : (
                             <p className="text-xs text-on-surface-variant">
-                              Using saved AI provider from Preferences.
+                              {t('grocery.smartGroupPopup.AItext')}
                             </p>
                           )}
                           {showLanguagePickerInModals() ? (
@@ -980,7 +1004,7 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                             </div>
                           ) : (
                             <p className="text-xs text-on-surface-variant mt-3">
-                              Using saved response language from Preferences.
+                              {t('grocery.smartGroupPopup.langText')}
                             </p>
                           )}
                           <div className="mt-3 flex justify-end gap-2">
@@ -988,14 +1012,14 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                               onClick={() => setShowSmartGroupPopup(false)}
                               className="px-3 py-1.5 rounded-full text-xs font-display font-semibold text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high"
                             >
-                              Close
+                              {t('grocery.smartGroupPopup.buttons.close')}
                             </button>
                             <button
                               onClick={smartGroup}
                               disabled={isGrouping || sortedItems.length === 0}
                               className="px-3 py-1.5 rounded-full text-xs font-display font-semibold bg-primary text-on-primary disabled:opacity-50"
                             >
-                              Run Grouping
+                              {t('grocery.smartGroupPopup.buttons.run')}
                             </button>
                           </div>
                         </div>
@@ -1006,7 +1030,7 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                       className="px-4 py-2 bg-surface-container-high rounded-full text-xs font-display font-bold text-on-surface-variant inline-flex items-center gap-2 hover:bg-surface-container-highest transition-colors"
                     >
                       <FileDown className="w-3.5 h-3.5" />
-                      Export PDF
+                      {t('grocery.buttons.export')}
                     </button>
                   </>
                 )}
@@ -1019,7 +1043,7 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                     <div key={category}>
                       {category !== 'Uncategorized' && (
                         <div className="px-6 lg:px-8 py-3 bg-surface-container-low/60 dark:bg-surface-container-high/40 text-[10px] font-display font-bold uppercase tracking-widest text-on-surface-variant">
-                          {category}
+                          {fallbackCategoryLabels[category] ?? category}
                         </div>
                       )}
                       <ul>
@@ -1055,7 +1079,10 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                               }`}
                             >
                               {formatAmountLabel(item.amount)}{' '}
-                              {formatMeasureLabel(item.amount, item.measure)}
+                              {formatMeasureLabel(
+                                item.measure,
+                                t('grocery.measure.unit', { count: item.amount }),
+                              )}
                             </div>
                           </li>
                         ))}
@@ -1067,10 +1094,10 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                 <div className="p-14 text-center">
                   <ShoppingCart className="w-12 h-12 text-outline-variant mx-auto mb-4" />
                   <h3 className="text-lg font-display font-bold text-on-surface">
-                    Your list is empty
+                    {t('grocery.empty.title')}
                   </h3>
                   <p className="text-on-surface-variant mt-1">
-                    Add meals to your weekly planner to generate a grocery list.
+                    {t('grocery.empty.subtitle')}
                   </p>
                 </div>
               )}
@@ -1080,16 +1107,16 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
           <aside className="space-y-6">
             <div className="bg-surface-container-low rounded-[2rem] p-6 lg:p-7">
               <h3 className="font-display text-lg font-bold text-primary-container dark:text-primary-fixed-dim mb-2">
-                Add to Pantry
+                {t('pantry.form.title')}
               </h3>
               <p className="text-xs text-on-surface-variant mb-4">
-                Quickly register new stock items.
+                {t('pantry.form.subtitle')}
               </p>
               <form onSubmit={handleAddPantry} className="space-y-3">
-                <FieldLabel>Item Name</FieldLabel>
+                <FieldLabel>{t('pantry.form.fields.name.label')}</FieldLabel>
                 <input
                   type="text"
-                  placeholder="e.g. Avocado Oil"
+                  placeholder={t('pantry.form.fields.name.placeholder')}
                   value={newPantryName}
                   onChange={(e) => setNewPantryName(e.target.value)}
                   className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/30 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
@@ -1102,7 +1129,7 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                 </datalist>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <FieldLabel>Quantity</FieldLabel>
+                    <FieldLabel>{t('pantry.form.fields.quantity.label')}</FieldLabel>
                     <input
                       type="number"
                       min="0"
@@ -1113,7 +1140,7 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                     />
                   </div>
                   <div>
-                    <FieldLabel>Unit</FieldLabel>
+                    <FieldLabel>{t('pantry.form.fields.unit.label')}</FieldLabel>
                     <select
                       value={newPantryMeasure}
                       onChange={(e) => setNewPantryMeasure(e.target.value)}
@@ -1133,7 +1160,7 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                   className="w-full px-5 py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary font-display font-semibold text-sm rounded-full disabled:opacity-50 inline-flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all"
                 >
                   <Plus className="w-4 h-4" />
-                  Add Item to Stock
+                  {t('pantry.form.button')}
                 </button>
               </form>
             </div>
@@ -1142,11 +1169,11 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles className="w-4 h-4" />
                 <span className="text-xs font-display font-bold uppercase tracking-widest">
-                  Quick Inventory Tip
+                  {t('pantry.tip.title')}
                 </span>
               </div>
               <p className="text-sm font-medium leading-relaxed">
-                Keeping your pantry updated helps ARPA suggest better recipes based on what you already have, reducing food waste and grocery spend.
+                {t('pantry.tip.text')}
               </p>
             </div>
           </aside>
@@ -1160,10 +1187,10 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
               </div>
               <div>
                 <h2 className="text-2xl font-display font-extrabold tracking-tight text-on-surface">
-                  Items in Stock
+                  {t('pantry.title2')}
                 </h2>
                 <p className="text-xs text-on-surface-variant">
-                  Items here are subtracted from your grocery list.
+                  {t('pantry.subtitle2')}
                 </p>
               </div>
             </div>
@@ -1173,10 +1200,11 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                 <div className="p-14 text-center">
                   <Package className="w-12 h-12 text-outline-variant mx-auto mb-4" />
                   <h3 className="text-lg font-display font-bold text-on-surface">
-                    Your pantry is empty
+                    {t('pantry.empty.title')}
+                    
                   </h3>
                   <p className="text-on-surface-variant mt-1">
-                    Add items in the side panel to keep your grocery list accurate.
+                    {t('pantry.empty.subtitle')}
                   </p>
                 </div>
               ) : (
@@ -1195,7 +1223,7 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                             {item.name}
                           </p>
                           <p className="text-[10px] text-outline uppercase tracking-widest font-display font-semibold">
-                            Pantry Item
+                            {t('pantry.items.title')}
                           </p>
                         </div>
                       </div>
@@ -1206,7 +1234,7 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                         <button
                           onClick={() => handleRemovePantry(item.id)}
                           className="p-2 text-outline hover:text-secondary hover:bg-secondary/10 rounded-full transition-colors"
-                          aria-label={`Remove ${item.name}`}
+                          aria-label={t('pantry.items.remove', {name: item.name})}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -1221,16 +1249,16 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
           <aside className="space-y-6">
             <div className="bg-surface-container-low rounded-[2rem] p-6 lg:p-7">
               <h3 className="font-display text-lg font-bold text-primary-container dark:text-primary-fixed-dim mb-2">
-                Add to Pantry
+                {t('pantry.form.title')}
               </h3>
               <p className="text-xs text-on-surface-variant mb-4">
-                Quickly register new stock items.
+                {t('pantry.form.subtitle')}
               </p>
               <form onSubmit={handleAddPantry} className="space-y-3">
-                <FieldLabel>Item Name</FieldLabel>
+                <FieldLabel>{t('pantry.form.fields.name.label')}</FieldLabel>
                 <input
                   type="text"
-                  placeholder="e.g. Avocado Oil"
+                  placeholder={t('pantry.form.fields.name.placeholder')}
                   value={newPantryName}
                   onChange={(e) => setNewPantryName(e.target.value)}
                   className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/30 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
@@ -1243,7 +1271,7 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                 </datalist>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <FieldLabel>Quantity</FieldLabel>
+                    <FieldLabel>{t('pantry.form.fields.quantity.label')}</FieldLabel>
                     <input
                       type="number"
                       min="0"
@@ -1254,7 +1282,7 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                     />
                   </div>
                   <div>
-                    <FieldLabel>Unit</FieldLabel>
+                    <FieldLabel>{t('pantry.form.fields.unit.label')}</FieldLabel>
                     <select
                       value={newPantryMeasure}
                       onChange={(e) => setNewPantryMeasure(e.target.value)}
@@ -1274,7 +1302,7 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
                   className="w-full px-5 py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary font-display font-semibold text-sm rounded-full disabled:opacity-50 inline-flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all"
                 >
                   <Plus className="w-4 h-4" />
-                  Add Item to Stock
+                  {t('pantry.form.button')}
                 </button>
               </form>
             </div>
@@ -1283,11 +1311,11 @@ export default function GroceryList({ initialTab = 'list' }: GroceryListProps) {
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles className="w-4 h-4" />
                 <span className="text-xs font-display font-bold uppercase tracking-widest">
-                  Quick Inventory Tip
+                  {t('pantry.tip.title')}
                 </span>
               </div>
               <p className="text-sm font-medium leading-relaxed">
-                Keeping your pantry updated helps ARPA suggest better recipes based on what you already have, reducing food waste and grocery spend.
+                {t('pantry.tip.text')}
               </p>
             </div>
           </aside>

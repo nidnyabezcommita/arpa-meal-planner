@@ -17,8 +17,11 @@ import { apiFetch } from '../lib/api';
 import { getMealBaseServings, resolveEffectiveServings } from '../lib/meal-scaling';
 import { isAiJobNavigationState, type AiJobNavigationState } from '../lib/ai-job-nav-state';
 import { loadWeekStartsOn } from '../lib/preferences';
+import { useTranslation } from 'react-i18next';
+import { dateLocaleFor } from '../lib/date-locale';
 
 export default function Planner() {
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [meals, setMeals] = useState<Meal[]>([]);
@@ -74,6 +77,7 @@ export default function Planner() {
   const weekStartsOn = loadWeekStartsOn();
   const startDate = startOfWeek(selectedDate, { weekStartsOn });
   const weekDays = Array.from({ length: 7 }).map((_, i) => addDays(startDate, i));
+  const dateLocale = dateLocaleFor(i18n.resolvedLanguage);
 
   const tags = Array.from(new Set(meals.map((m) => m.tag).filter(Boolean)));
 
@@ -114,13 +118,13 @@ export default function Planner() {
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(
-          (body as { error?: string }).error || 'Failed to update servings override'
+          (body as { error?: string }).error || t('planner.errors.update')
         );
       }
     } catch (error) {
       setPlannerItems(previous);
-      console.error('Failed to update servings override', error);
-      alert(error instanceof Error ? error.message : 'Failed to update servings override');
+      console.error(t('planner.errors.update'), error);
+      alert(error instanceof Error ? error.message : t('planner.errors.update'));
     }
   };
 
@@ -179,12 +183,12 @@ export default function Planner() {
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error((body as { error?: string }).error || 'Failed to move meal');
+        throw new Error((body as { error?: string }).error || t('planner.errors.move'));
       }
     } catch (error) {
       setPlannerItems(previous);
       console.error('Failed to move meal in planner', error);
-      alert(error instanceof Error ? error.message : 'Failed to move meal');
+      alert(error instanceof Error ? error.message : t('planner.errors.move'));
     }
   };
 
@@ -218,10 +222,10 @@ export default function Planner() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl md:text-4xl font-display font-extrabold tracking-tight text-primary-container dark:text-primary-fixed-dim">
-            Weekly Planner
+            {t('planner.title')}
           </h1>
           <p className="text-on-surface-variant mt-1 font-medium">
-            Drag recipes onto your week, or move planned meals between days.
+            {t('planner.subtitle')}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -229,17 +233,18 @@ export default function Planner() {
             <button
               onClick={() => setSelectedDate(addDays(selectedDate, -7))}
               className="p-2 rounded-full hover:bg-surface-container-lowest transition-colors active:scale-90"
-              aria-label="Previous week"
+              aria-label={t('app.buttons.previousWeek')}
             >
               <ChevronLeft className="w-4 h-4 text-on-surface-variant" />
             </button>
             <div className="px-3 text-sm font-display font-semibold text-on-surface whitespace-nowrap">
-              {format(startDate, 'MMM d')} – {format(addDays(startDate, 6), 'MMM d')}
+              {format(startDate, 'MMM d', { locale: dateLocale })} –{' '}
+              {format(addDays(startDate, 6), 'MMM d', { locale: dateLocale })}
             </div>
             <button
               onClick={() => setSelectedDate(addDays(selectedDate, 7))}
               className="p-2 rounded-full hover:bg-surface-container-lowest transition-colors active:scale-90"
-              aria-label="Next week"
+              aria-label={t('app.buttons.nextWeek')}
             >
               <ChevronRight className="w-4 h-4 text-on-surface-variant" />
             </button>
@@ -248,14 +253,14 @@ export default function Planner() {
             onClick={() => setSelectedDate(new Date())}
             className="px-5 py-2.5 rounded-full bg-surface-container-highest text-on-surface font-display font-semibold text-sm hover:bg-surface-container-high transition-colors"
           >
-            Today
+            {t('planner.today')}
           </button>
           <button
             onClick={() => setIsGenerateModalOpen(true)}
             className="px-5 py-2.5 rounded-full bg-gradient-to-br from-primary to-primary-container text-on-primary font-display font-semibold text-sm flex items-center gap-2 transition-opacity hover:opacity-90 active:scale-95 shadow-sm"
           >
             <Sparkles className="w-4 h-4" />
-            <span className="hidden sm:inline">Generate Plan</span>
+            <span className="hidden sm:inline">{t('planner.buttons.generatePlan')}</span>
           </button>
         </div>
       </div>
@@ -291,7 +296,7 @@ export default function Planner() {
                       isToday ? 'text-primary-container dark:text-primary-fixed-dim' : 'text-outline'
                     }`}
                   >
-                    {format(day, 'EEE')}
+                    {format(day, 'EEE', { locale: dateLocale })}
                   </p>
                   <p
                     className={`font-display text-xl font-extrabold ${
@@ -304,7 +309,7 @@ export default function Planner() {
                   </p>
                   {activeDropDate === dateStr && (
                     <span className="mt-1 inline-flex rounded-full bg-primary px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-on-primary">
-                      Drop meal here
+                      {t('planner.dropHere')}
                     </span>
                   )}
                 </div>
@@ -319,7 +324,7 @@ export default function Planner() {
                       className={`aspect-[4/5] rounded-[1.5rem] overflow-hidden relative group/card shadow-sm hover:shadow-md transition-all bg-surface-container cursor-grab active:cursor-grabbing select-none ${
                         draggingPlannerId === planner.id ? 'opacity-50 scale-[0.98]' : ''
                       }`}
-                      aria-label={`Move ${planner.meal_name} to another day`}
+                      aria-label={t('planner.moveAria', { name: planner.meal_name })}
                     >
                       {meal?.image_url ? (
                         <img
@@ -346,7 +351,7 @@ export default function Planner() {
                         {meal ? (
                           <div className="mt-1 inline-flex items-center gap-1 bg-white/20 backdrop-blur-sm rounded-full px-2 py-0.5 text-[10px] text-white/90 font-bold">
                             <Clock className="w-3 h-3" />
-                            {resolveEffectiveServings(meal, planner.servings_override)} servings
+                            {resolveEffectiveServings(meal, planner.servings_override)} {t('planner.servings')}
                           </div>
                         ) : null}
                       </div>
@@ -366,7 +371,7 @@ export default function Planner() {
                               handleUpdateServingsOverride(planner.id, next === base ? null : next);
                             }}
                             className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/65 text-white text-xl font-bold flex items-center justify-center shadow-lg opacity-0 group-hover/card:opacity-100 hover:bg-black/80 transition-all pointer-events-auto"
-                            aria-label="Decrease servings"
+                            aria-label={t('planner.buttons.decrease')}
                           >
                             -
                           </button>
@@ -383,7 +388,7 @@ export default function Planner() {
                               handleUpdateServingsOverride(planner.id, next === base ? null : next);
                             }}
                             className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/65 text-white text-xl font-bold flex items-center justify-center shadow-lg opacity-0 group-hover/card:opacity-100 hover:bg-black/80 transition-all pointer-events-auto"
-                            aria-label="Increase servings"
+                            aria-label={t('planner.buttons.increase')}
                           >
                             +
                           </button>
@@ -395,7 +400,7 @@ export default function Planner() {
                           handleRemoveMeal(planner.id);
                         }}
                         className="absolute top-2 right-2 z-20 p-1.5 bg-white/85 hover:bg-white text-secondary rounded-full opacity-0 group-hover/card:opacity-100 transition-all"
-                        aria-label="Remove from planner"
+                        aria-label={t('planner.buttons.remove')}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -415,10 +420,10 @@ export default function Planner() {
                       onBlur={() => setIsAdding(null)}
                       autoFocus
                     >
-                      <option value="">Select a meal…</option>
+                      <option value="">{t('planner.select')}</option>
                       {meals.map((meal) => (
                         <option key={meal.id} value={meal.id}>
-                          {meal.name} ({getMealBaseServings(meal)} servings)
+                          {meal.name} ({t('planner.mealOptionServings', { count: getMealBaseServings(meal) })})
                         </option>
                       ))}
                     </select>
@@ -430,7 +435,7 @@ export default function Planner() {
                   >
                     <Plus className="w-5 h-5" />
                     <span className="text-[10px] font-display font-bold uppercase tracking-wider">
-                      Quick Add
+                      {t('planner.buttons.add')}
                     </span>
                   </button>
                 )}
@@ -443,9 +448,9 @@ export default function Planner() {
         <aside className="w-full lg:w-80 flex-shrink-0 bg-surface-container-low rounded-[2rem] p-6 flex flex-col gap-5 self-start lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)]">
           <div>
             <h3 className="font-display text-xl font-bold text-primary-container dark:text-primary-fixed-dim">
-              Recipe Discovery
+              {t('planner.discovery.title')}
             </h3>
-            <p className="text-xs text-outline font-medium mt-1">Drag recipes onto your calendar</p>
+            <p className="text-xs text-outline font-medium mt-1">{t('planner.discovery.subtitle')}</p>
           </div>
 
           <div className="relative">
@@ -454,7 +459,7 @@ export default function Planner() {
               type="text"
               value={discoverySearch}
               onChange={(e) => setDiscoverySearch(e.target.value)}
-              placeholder="Find inspiration…"
+              placeholder={t('planner.discovery.search.placeholder')}
               className="w-full pl-9 pr-3 py-2.5 bg-surface-container-lowest border-none rounded-full text-xs focus:outline-none focus:ring-1 focus:ring-primary/30 text-on-surface placeholder:text-outline"
             />
           </div>
@@ -468,7 +473,7 @@ export default function Planner() {
                   : 'bg-surface-container-lowest text-on-surface-variant hover:bg-surface-dim'
               }`}
             >
-              All
+              {t('planner.discovery.all')}
             </button>
             {tags.slice(0, 6).map((tag) => (
               <button
@@ -518,7 +523,10 @@ export default function Planner() {
                       )}
                       <span className="text-outline text-[9px] font-medium flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        {meal.ingredients.length} / {getMealBaseServings(meal)} servings
+                        {t('planner.discovery.count', {
+                          ingredients: meal.ingredients.length,
+                          servings: getMealBaseServings(meal),
+                        })}
                       </span>
                     </div>
                   </div>
@@ -527,7 +535,7 @@ export default function Planner() {
               ))
             ) : (
               <p className="text-xs text-outline italic text-center py-6">
-                No recipes match your search. Try clearing filters.
+                {t('planner.discovery.empty')}
               </p>
             )}
           </div>

@@ -1,0 +1,625 @@
+{
+  "addMealModal": {
+    "title": {
+      "edit": "Edit Recipe",
+      "add": "Add New Recipe"
+    },
+    "subtitle": "Capture every detail of your dish.",
+    "fields": {
+      "name": {
+        "label": "Meal Name *",
+        "placeholder": "e.g. Bebu Koftesi"
+      },
+      "tag": {
+        "label": "Tag",
+        "placeholder": "e.g. Mediterranean, Breakfast"
+      },
+      "servings": {
+        "label": "Default Servings *",
+        "placeholder": ""
+      },
+      "url": {
+        "label": "Source URL",
+        "placeholder": "https://..."
+      },
+      "image": {
+        "label": "Meal Image",
+        "placeholder": ""
+      },
+      "instructions": {
+        "label": "Instructions",
+        "placeholder": ""
+      },
+      "step": {
+        "label": "",
+        "placeholder": "Step"
+      },
+      "ingredients": {
+        "label": "Ingredients",
+        "placeholder": ""
+      },
+      "ingredient": {
+        "label": "",
+        "placeholder": "Ingredient"
+      },
+      "amount": {
+        "label": "",
+        "placeholder": "Amount"
+      },
+      "calories": {
+        "label": "Calories",
+        "placeholder": "Calories"
+      },
+      "protein": {
+        "label": "Protein",
+        "placeholder": "Protein (g)"
+      },
+      "fat": {
+        "label": "Fat",
+        "placeholder": "Fat (g)"
+      },
+      "carbs": {
+        "label": "Carbs",
+        "placeholder": "Carbs (g)"
+      },
+      "imageUrl": {
+        "placeholder": "Paste image URL..."
+      }
+    },
+    "links": {
+      "addStep": "Add Step",
+      "fetchInstructions": "Fetch Instructions",
+      "estimate": "Estimate Nutrition",
+      "addIngredient": "Add Ingredient"
+    },
+    "texts": {
+      "noImage": "No image selected",
+      "noInstructions": "No instructions added yet. Click \"Add Step\" to begin."
+    },
+    "buttons": {
+      "upload": "Upload",
+      "camera": "Camera",
+      "url": "URL",
+      "add": "Add Meal",
+      "cancel": "Cancel",
+      "save": "Save Changes"
+    },
+    "errors": {
+      "camera": "Could not access camera. Please check permissions.",
+      "nutrition": "Failed to estimate nutrition",
+      "instructions": "Instructions already exist. Clear them first to fetch replacements.",
+      "meal": "Failed to save meal",
+      "fetchInstructions": "Failed to fetch instructions",
+      "noInstructions": "No instructions were returned."
+    },
+    "nutrition": "Nutrition fields updated from AI estimates.",
+    "responseLangMsg": "Using saved response language from Preferences for AI instructions and nutrition.",
+    "meal": "Meal",
+    "untitledMeal": "Untitled meal",
+    "successInstruction": "Instructions fetched successfully.",
+    "imagePreview": "Meal image preview"
+  },
+  "aiJobQueuePanel": {
+    "jobs": "AI jobs",
+    "click": "Click to open in editor",
+    "language": "Language",
+    "running": "Running",
+    "buttons": {
+      "clear": "Clear done"
+    },
+    "labels": {
+      "jobs": "AI jobs: {{runningCount}} running, {{length}} total. Expand queue.",
+      "queue": "AI job queue",
+      "minimize": "Minimize AI job queue",
+      "result": "{{title}}: open result in app",
+      "dismiss": "Dismiss job"
+    }
+  },
+  "aiProviderSelector": {
+    "fields": {
+      "AiProvider": {
+        "label": "AI Provider"
+      },
+      "model": {
+        "label": "Model (optional)",
+        "placeholder": "Use provider default"
+      }
+    },
+    "disable": "Image generation currently supports Google provider only."
+  },
+  "app": {
+    "logo": {
+      "title": "ARPA",
+      "subtitle": "Meal Planner"
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "planner": "Planner",
+      "grocery": "Grocery List",
+      "pantry": "Pantry",
+      "familySync": "Family Sync",
+      "personal": "Personal",
+      "chef": {
+        "title": "Chef",
+        "subtitle": "Profile & settings"
+      }
+    },
+    "mobileNav": {
+      "home": "Home",
+      "planner": "Planner",
+      "grocery": "Grocery",
+      "pantry": "Pantry",
+      "settings": "Settings"
+    },
+    "pageTitle": {
+      "dashboard": "Dashboard",
+      "planner": "Weekly Planner",
+      "grocery": "Grocery List",
+      "pantry": "Pantry Inventory",
+      "preferences": "Preferences",
+      "appName": "ARPA: Meal Planner"
+    },
+    "placeholders": {
+      "search": "Search recipes, ingredients..."
+    },
+    "buttons": {
+      "theme": {
+        "light": "Switch to light theme",
+        "dark": "Switch to dark theme"
+      },
+      "notifications": "Notifications",
+      "nextWeek": "Next week",
+      "previousWeek": "Previous week",
+      "close": "Close"
+    }
+  },
+  "chatbot": {
+    "title": "Bebü Bot",
+    "AItext": "AI provider from Preferences · {{provider}}",
+    "message": "Hello Bebü! I'm your meal planning assistant. Ask me about recipes, ingredients, or your weekly plan.",
+    "fields": {
+      "q": {
+        "placeholder": "Ask about recipes, ingredients..."
+      }
+    },
+    "thinking": "Thinking…",
+    "errors": {
+      "request": "Chat request failed",
+      "unknown": "Unknown error",
+      "response": "Error: {{message}}"
+    }
+  },
+  "dashboard": {
+    "pageTitle": "Welcome back, Gourmet.",
+    "pageSubtitle": "Nutrition and meals for {{from}} - {{to}}.",
+    "confirmDelete": "Are you sure you want to delete this meal?",
+    "buttons": {
+      "currentWeek": "Current Week",
+      "importRecipe": "Import Recipe",
+      "addMeal": "Add Meal"
+    },
+    "widgets": {
+      "calories": {
+        "title": "Calories",
+        "subtitle": "kcal/daily"
+      },
+      "protein": {
+        "title": "Protein",
+        "units": "g"
+      },
+      "carbs": {
+        "title": "Carbs",
+        "units": "g"
+      },
+      "fat": {
+        "title": "Fat",
+        "units": "g"
+      }
+    },
+    "weeklyOverview": {
+      "title": "Weekly Overview",
+      "links": {
+        "viewCalendar": "View Calendar",
+        "recipeDetails": "Recipe Details"
+      },
+      "today": "Today",
+      "count": "{{ingredients}} ingredients / {{servings}} servings",
+      "empty": "Add meals to your planner to see your weekly overview here."
+    },
+    "grocery": {
+      "title": "Grocery List",
+      "empty": "No grocery items needed for this week.",
+      "links": {
+        "open": "Open grocery list"
+      }
+    },
+    "pantry": {
+      "title": "Pantry Stock Alerts",
+      "empty": "Pantry levels look healthy.",
+      "alert": {
+        "title": "Low on {{name}}",
+        "amount": "Only {{amount}} {{measure}} remaining"
+      }
+    },
+    "promo": {
+      "title": "Master the Art of Meal Prep.",
+      "text": "Our AI analyzes your pantry and cravings to generate a bespoke weekly menu that reduces waste and elevates your kitchen.",
+      "button": "Optimize My Weekly Plan"
+    },
+    "recipes": {
+      "title": "Recipe Library",
+      "meal": "meal",
+      "meals": "meals",
+      "search": {
+        "placeholder": "Search recipes, ingredients..."
+      },
+      "all": "All",
+      "empty": {
+        "title": "No meals found",
+        "subtitle": "Try adjusting your search or add a new meal."
+      }
+    }
+  },
+  "familySyncModal": {
+    "title": "Family Sync",
+    "text": "Enter a shared family code to sync meals, planner, and grocery lists across devices. Leave blank for personal use.",
+    "fields": {
+      "code": {
+        "label": "Family Code",
+        "placeholder": "e.g. smith-family-2024"
+      }
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "save": "Save & Sync"
+    }
+  },
+  "generatePlanModal": {
+    "title": "Generate Weekly Plan",
+    "subtitle": "Powered by Bebü Bot AI",
+    "text": "Let AI craft a complete 7-day meal plan starting from",
+    "AItext": "Using saved AI provider from Preferences.",
+    "langText": "Using saved response language from Preferences.",
+    "dietary": "Dietary Preference",
+    "jobTitle": "Generate weekly plan",
+    "errors": {
+      "generate": "Failed to generate meal plan",
+      "default": "An error occurred while generating the meal plan."
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "loading": "Generating...",
+      "generate": "Generate Plan"
+    },
+    "diets": {
+      "any": "Any / Balanced",
+      "vegan": "Vegan",
+      "paleo": "Paleo",
+      "lowCarb": "Low Carb",
+      "vegetarian": "Vegetarian",
+      "keto": "Keto",
+      "highProtein": "High Protein",
+      "mediterranean": "Mediterranean"
+    }
+  },
+  "grocery": {
+    "title": "Grocery List",
+    "subtitle": "Pantry items are excluded automatically.",
+    "banner": {
+      "title": "Pantry Sync Active",
+      "subtitle": "Pantry items are excluded from grocery calculations for a cleaner shopping experience.",
+      "link": "Adjust Pantry"
+    },
+    "title2": "Grocery List",
+    "measure": {
+      "unit_one": "Unit",
+      "unit_other": "Units"
+    },
+    "categories": {
+      "dairyCold": "Dairy & Cold",
+      "freshProduce": "Fresh Produce",
+      "meatSeafood": "Meat & Seafood",
+      "bakery": "Bakery",
+      "pantry": "Pantry",
+      "frozen": "Frozen"
+    },
+    "pdf": {
+      "title": "Grocery List",
+      "week": "For week of {{from}} - {{to}}",
+      "yes": "Yes",
+      "no": "No",
+      "headers": {
+        "done": "Got it?",
+        "item": "Item",
+        "amount": "Amount"
+      },
+      "filename": "Grocery-List"
+    },
+    "empty": {
+      "title": "Your list is empty",
+      "subtitle": "Add meals to your weekly planner to generate a grocery list."
+    },
+    "buttons": {
+      "all": "All Categories",
+      "sort": "Sort",
+      "merge": "Merge Similar Items",
+      "group": "Smart Group",
+      "export": "Export PDF"
+    },
+    "mergePopup": {
+      "title": "Merge Similar Names",
+      "empty": "No close matches found in this week's grocery names.",
+      "suggestedGroup": "Suggested Group",
+      "selectAll": "Select All",
+      "fields": {
+        "addItem": {
+          "label": "Add items manually",
+          "placeholder": "Search names (e.g. Butter)"
+        },
+        "mergeInto": {
+          "label": "Merge into",
+          "placeholder": "Select target name"
+        }
+      },
+      "noMatches": "No additional matches.",
+      "confirm": "Merge {{count}} names into \"{{target}}\"? This updates meal ingredients and pantry names.",
+      "success": "Merged {{count}} names into \"{{target}}\".",
+      "errors": {
+        "selectTwo": "Select at least 2 names to merge.",
+        "selectTarget": "Select a valid target name from the selected items.",
+        "endpoint": "Merge endpoint is unavailable (404). Restart the dev server so the latest backend routes load.",
+        "default": "Failed to merge names"
+      },
+      "buttons": {
+        "close": "Close",
+        "apply": "Apply Merge",
+        "merging": "Merging..."
+      }
+    },
+    "smartGroupPopup": {
+      "AItext": "Using saved AI provider from Preferences.",
+      "langText": "Using saved response language from Preferences.",
+      "jobTitle": "Smart-group groceries",
+      "itemCount": "Grocery list ({{count}} items)",
+      "errors": {
+        "request": "Grouping request failed",
+        "rateLimit": "Bebü Bot is a bit busy right now (rate limit reached). I've applied some basic grouping for you!",
+        "fallback": "Something went wrong while grouping. I've tried my best to categorize common items."
+      },
+      "buttons": {
+        "close": "Close",
+        "run": "Run Grouping"
+      }
+    }
+  },
+  "imageGenerator": {
+    "title": "Generate Image",
+    "subtitle": "Powered by Nano Banana Pro",
+    "text": "Generate a custom illustration for",
+    "fields": {
+      "quality": {
+        "label": "Image Quality",
+        "options": {
+          "1K": "1K · Standard",
+          "2K": "2K · High Quality",
+          "4K": "4K · Ultra HQ"
+        }
+      }
+    },
+    "buttons": {
+      "generate": "Generate Image",
+      "loading": "Generating...",
+      "cancel": "Cancel"
+    },
+    "googleText": "Meal images always use Google. Model follows your Gemini settings when applicable; otherwise the Google default applies.",
+    "errors": {
+      "onlyGoogle": "Image generation currently supports only the Google provider.",
+      "default": "An error occurred",
+      "noImage": "No image was returned"
+    }
+  },
+  "importRecipeModal": {
+    "title": "Import Recipe",
+    "subtitle": "Find a recipe anywhere on the web.",
+    "text": "Enter a recipe name or URL. Bebü Bot will search the web, extract ingredients, and estimate nutrition for you.",
+    "fields": {
+      "search": {
+        "label": "Recipe search or URL",
+        "placeholder": "e.g. Chocolate chip cookies or https://..."
+      }
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "import": "Import Recipe",
+      "loading": "Importing..."
+    },
+    "errors": {
+      "default": "An error occurred while importing the recipe.",
+      "parse": "Failed to parse recipe data. Please try another query.",
+      "importFailed": "Import failed"
+    }
+  },
+  "mealCard": {
+    "count": "{{ingredients}} items / {{servings}} servings",
+    "noImage": "No image",
+    "menu": {
+      "edit": "Edit Meal",
+      "generateImage": "Generate Image",
+      "delete": "Delete"
+    },
+    "ingredients": "Ingredients",
+    "kcal": "kcal",
+    "more": "more"
+  },
+  "mealDetailsModal": {
+    "noImageText": "No image available",
+    "ingredients": "ingredients",
+    "servings": "servings",
+    "base": "base",
+    "edit": "Edit Meal",
+    "viewOriginal": "View Original Recipe",
+    "nutrients": {
+      "calories": "Cal",
+      "protein": "Pro",
+      "fat": "Fat",
+      "carbs": "Carb"
+    },
+    "ingredientsList": {
+      "title": "Ingredients"
+    },
+    "instructions": {
+      "title": "Instructions",
+      "empty": {
+        "title": "No instructions available for this meal.",
+        "subtitle": "Edit the meal to add step-by-step directions."
+      },
+      "step": "Step {{number}} of {{count}}",
+      "next": "Next",
+      "prev": "Previous"
+    }
+  },
+  "pantry": {
+    "title": "Pantry Inventory",
+    "subtitle": "Track stock to keep your grocery list accurate.",
+    "banner": {
+      "link": "View Grocery"
+    },
+    "title2": "Items in Stock",
+    "subtitle2": "Items here are subtracted from your grocery list.",
+    "empty": {
+      "title": "Your pantry is empty",
+      "subtitle": "Add items in the side panel to keep your grocery list accurate."
+    },
+    "items": {
+      "title": "Pantry Item",
+      "remove": "Remove {{name}}"
+    },
+    "form": {
+      "title": "Add to Pantry",
+      "subtitle": "Quickly register new stock items.",
+      "fields": {
+        "name": {
+          "label": "Item Name",
+          "placeholder": "e.g. Avocado Oil"
+        },
+        "quantity": {
+          "label": "Quantity"
+        },
+        "unit": {
+          "label": "Unit"
+        }
+      },
+      "button": "Add Item to Stock"
+    },
+    "tip": {
+      "title": "Quick Inventory Tip",
+      "text": "Keeping your pantry updated helps ARPA suggest better recipes based on what you already have, reducing food waste and grocery spend."
+    }
+  },
+  "planner": {
+    "title": "Weekly Planner",
+    "subtitle": "Drag recipes onto your week, or move planned meals between days.",
+    "buttons": {
+      "generatePlan": "Generate Plan",
+      "remove": "Remove from planner",
+      "decrease": "Decrease servings",
+      "increase": "Increase servings",
+      "add": "Quick Add"
+    },
+    "today": "Today",
+    "select": "Select a meal…",
+    "servings": "servings",
+    "dropHere": "Drop meal here",
+    "moveAria": "Move {{name}} to another day",
+    "mealOptionServings": "{{count}} servings",
+    "discovery": {
+      "title": "Recipe Discovery",
+      "subtitle": "Drag recipes onto your calendar",
+      "search": {
+        "placeholder": "Find inspiration…"
+      },
+      "empty": "No recipes match your search. Try clearing filters.",
+      "all": "All",
+      "count": "{{ingredients}} ingredients / {{servings}} servings"
+    },
+    "errors": {
+      "move": "Failed to move meal",
+      "update": "Failed to update servings override"
+    }
+  },
+  "preferences": {
+    "title": "Preferences",
+    "subtitle": "Defaults for new recipes, calendar layout, appearance, and AI behavior.",
+    "interfaceLanguage": {
+      "title": "Interface Language",
+      "text": "Choose the language used throughout ARPA. Your choice is saved in this browser.",
+      "label": "Language"
+    },
+    "meals": {
+      "title": "Meals",
+      "text": "Applies when you add a new recipe or import without an explicit servings value.",
+      "fields": {
+        "servings": {
+          "label": "Default servings (1–100)"
+        }
+      },
+      "buttons": {
+        "save": "Save servings",
+        "saved": "Saved"
+      }
+    },
+    "calendar": {
+      "title": "Calendar",
+      "text": "First day of the week for Dashboard previews, Planner, and grocery week ranges.",
+      "monday": "Monday",
+      "sunday": "Sunday"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "text": "System follows your OS light/dark setting. The desktop header and mobile bar theme icons switch between explicit Light and Dark (they leave System mode when used).",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "ai": {
+      "title": "AI",
+      "fields": {
+        "providerUi": {
+          "label": "Provider UI",
+          "options": {
+            "choose": {
+              "title": "Choose provider per request",
+              "text": "Show the provider picker on chat, import, plan generation, images, and grocery grouping."
+            },
+            "one": {
+              "title": "Use one provider for everything",
+              "text": "Hide inline pickers; all AI calls use the provider and model below."
+            }
+          }
+        },
+        "lang": {
+          "label": "Language UI",
+          "options": {
+            "choose": {
+              "title": "Choose language per request",
+              "text": "Show language selection on import, plan generation, grocery grouping, and meal AI actions. Chat follows your message language automatically."
+            },
+            "one": {
+              "title": "Use one language for structured AI",
+              "text": "Hide inline language pickers; import, plans, groceries, and meal AI use the language below."
+            }
+          }
+        }
+      },
+      "langHelper": "Auto infers language from your inputs when possible; otherwise uses your browser locale as a hint.",
+      "imageText": "Image generation always uses Google's image model. If your saved chat provider is Ollama or MLX, meal images still run on Google automatically."
+    }
+  },
+  "responseLanguageSelector": {
+    "fields": {
+      "language": {
+        "label": "Response language"
+      }
+    }
+  }
+}

@@ -16,6 +16,8 @@ import {
   structuredAiLanguagePayload,
 } from '../lib/ai-settings';
 import { aiJobModelLabel, useAiJobQueue } from '../context/AiJobQueueContext';
+import { useTranslation } from 'react-i18next';
+import { dateLocaleFor } from '../lib/date-locale';
 
 interface GeneratePlanModalProps {
   isOpen: boolean;
@@ -25,15 +27,15 @@ interface GeneratePlanModalProps {
 }
 
 const DIET_OPTIONS = [
-  'Any / Balanced',
-  'Vegetarian',
-  'Vegan',
-  'Keto',
-  'Paleo',
-  'High Protein',
-  'Low Carb',
-  'Mediterranean',
-];
+  { value: 'Any / Balanced', labelKey: 'generatePlanModal.diets.any' },
+  { value: 'Vegetarian', labelKey: 'generatePlanModal.diets.vegetarian' },
+  { value: 'Vegan', labelKey: 'generatePlanModal.diets.vegan' },
+  { value: 'Keto', labelKey: 'generatePlanModal.diets.keto' },
+  { value: 'Paleo', labelKey: 'generatePlanModal.diets.paleo' },
+  { value: 'High Protein', labelKey: 'generatePlanModal.diets.highProtein' },
+  { value: 'Low Carb', labelKey: 'generatePlanModal.diets.lowCarb' },
+  { value: 'Mediterranean', labelKey: 'generatePlanModal.diets.mediterranean' },
+] as const;
 
 export default function GeneratePlanModal({
   isOpen,
@@ -41,8 +43,9 @@ export default function GeneratePlanModal({
   onSave,
   startDate,
 }: GeneratePlanModalProps) {
+  const { t, i18n } = useTranslation();
   const { runWithAiJob } = useAiJobQueue();
-  const [diet, setDiet] = useState(DIET_OPTIONS[0]);
+  const [diet, setDiet] = useState<(typeof DIET_OPTIONS)[number]['value']>(DIET_OPTIONS[0].value);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [provider, setProvider] = useState<AiProviderId>(() => loadAiSettings().provider);
@@ -77,12 +80,14 @@ export default function GeneratePlanModal({
     setLoading(true);
     setError('');
 
-    const related = `${diet} · ${format(startDate, 'MMM d, yyyy')}`;
+    const dateLocale = dateLocaleFor(i18n.resolvedLanguage);
+    const selectedDiet = DIET_OPTIONS.find((option) => option.value === diet) ?? DIET_OPTIONS[0];
+    const related = `${t(selectedDiet.labelKey)} · ${format(startDate, 'MMM d, yyyy', { locale: dateLocale })}`;
     try {
       await runWithAiJob(
         {
           kind: 'generate-plan',
-          title: 'Generate weekly plan',
+          title: t('generatePlanModal.jobTitle'),
           relatedLabel: related,
           providerId: provider,
           modelLabel: aiJobModelLabel(provider, model),
@@ -106,7 +111,7 @@ export default function GeneratePlanModal({
           });
           const data = await res.json().catch(() => ({}));
           if (!res.ok) {
-            throw new Error(data.error || 'Failed to generate meal plan');
+            throw new Error(data.error || t('generatePlanModal.errors.generate'));
           }
 
           onSave();
@@ -115,7 +120,7 @@ export default function GeneratePlanModal({
     } catch (err: unknown) {
       console.error('Generation error:', err);
       setError(
-        err instanceof Error ? err.message : 'An error occurred while generating the meal plan.',
+        err instanceof Error ? err.message : t('generatePlanModal.errors.default'),
       );
     } finally {
       setLoading(false);
@@ -152,16 +157,18 @@ export default function GeneratePlanModal({
             </div>
             <div>
               <h2 className="text-xl font-display font-extrabold text-primary-container dark:text-primary-fixed-dim tracking-tight">
-                Generate Weekly Plan
+                {t('generatePlanModal.title')}
               </h2>
               <p className="text-xs text-on-surface-variant mt-0.5">
-                Powered by Bebü Bot AI
+                {t('generatePlanModal.subtitle')}
               </p>
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="p-2 rounded-full text-outline hover:bg-surface-container-high transition-colors"
+            aria-label={t('app.buttons.close')}
           >
             <X className="w-5 h-5" />
           </button>
@@ -169,9 +176,11 @@ export default function GeneratePlanModal({
 
         <div className="px-6 pb-2 space-y-5">
           <p className="text-sm text-on-surface-variant leading-relaxed">
-            Let AI craft a complete 7-day meal plan starting from{' '}
+            {t('generatePlanModal.text') + ' '}
             <strong className="text-on-surface font-display font-bold">
-              {format(startDate, 'MMM d, yyyy')}
+              {format(startDate, 'MMM d, yyyy', {
+                locale: dateLocaleFor(i18n.resolvedLanguage),
+              })}
             </strong>
             .
           </p>
@@ -187,7 +196,7 @@ export default function GeneratePlanModal({
             </div>
           ) : (
             <p className="text-xs text-on-surface-variant">
-              Using saved AI provider from Preferences.
+              {t('generatePlanModal.AItext')}
             </p>
           )}
 
@@ -195,26 +204,27 @@ export default function GeneratePlanModal({
             <ResponseLanguageSelector value={responseLanguage} onChange={handleResponseLanguageChange} />
           ) : (
             <p className="text-xs text-on-surface-variant">
-              Using saved response language from Preferences.
+              {t('generatePlanModal.langText')}
             </p>
           )}
 
           <div>
             <label className="block text-[11px] font-display font-bold uppercase tracking-widest text-outline mb-2">
-              Dietary Preference
+              {t('generatePlanModal.dietary')}
             </label>
             <div className="grid grid-cols-2 gap-2">
               {DIET_OPTIONS.map((option) => (
                 <button
-                  key={option}
-                  onClick={() => setDiet(option)}
+                  key={option.value}
+                  type="button"
+                  onClick={() => setDiet(option.value)}
                   className={`px-3 py-2.5 text-sm rounded-2xl border text-left transition-all ${
-                    diet === option
+                    diet === option.value
                       ? 'bg-primary-container/10 border-primary-container text-primary-container dark:bg-primary-fixed-dim/15 dark:border-primary-fixed-dim dark:text-primary-fixed-dim font-display font-semibold'
                       : 'bg-surface-container-lowest border-outline-variant/30 text-on-surface-variant hover:border-primary-container/40'
                   }`}
                 >
-                  {option}
+                  {t(option.labelKey)}
                 </button>
               ))}
             </div>
@@ -229,12 +239,14 @@ export default function GeneratePlanModal({
 
         <div className="px-6 py-4 mt-4 bg-surface-container-low/95 flex justify-end gap-3 border-t border-outline-variant/15">
           <button
+            type="button"
             onClick={onClose}
             className="px-5 py-2.5 text-on-surface-variant font-display font-semibold text-sm rounded-full hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors"
           >
-            Cancel
+            {t('generatePlanModal.buttons.cancel')}
           </button>
           <button
+            type="button"
             onClick={handleGenerate}
             disabled={loading}
             className="px-5 py-2.5 bg-gradient-to-br from-primary to-primary-container text-on-primary font-display font-semibold text-sm rounded-full hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2 shadow-sm"
@@ -242,12 +254,12 @@ export default function GeneratePlanModal({
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Generating...
+                {t('generatePlanModal.buttons.loading')}
               </>
             ) : (
               <>
                 <Sparkles className="w-4 h-4" />
-                Generate Plan
+                {t('generatePlanModal.buttons.generate')}
               </>
             )}
           </button>

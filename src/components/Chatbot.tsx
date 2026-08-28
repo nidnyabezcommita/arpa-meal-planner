@@ -10,6 +10,7 @@ import {
   saveAiSettings,
   showAiProviderPickerInModals,
 } from '../lib/ai-settings';
+import { useTranslation } from 'react-i18next';
 
 interface Message {
   role: 'user' | 'model';
@@ -17,11 +18,12 @@ interface Message {
 }
 
 export default function Chatbot() {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'model',
-      text: "Hello Bebü! I'm your meal planning assistant. Ask me about recipes, ingredients, or your weekly plan.",
+      text: t('chatbot.message'),
     },
   ]);
   const [input, setInput] = useState('');
@@ -76,12 +78,15 @@ export default function Chatbot() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(data.error || 'Chat request failed');
+        throw new Error(data.error || t('chatbot.errors.request'));
       }
       setMessages((prev) => [...prev, { role: 'model', text: data.text || '' }]);
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      setMessages((prev) => [...prev, { role: 'model', text: `Error: ${message}` }]);
+      const message = error instanceof Error ? error.message : t('chatbot.errors.unknown');
+      setMessages((prev) => [
+        ...prev,
+        { role: 'model', text: t('chatbot.errors.response', { message }) },
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -118,7 +123,7 @@ export default function Chatbot() {
         }`}
       >
         <Sparkles className="w-5 h-5" />
-        <span className="font-display font-bold text-sm hidden sm:inline">Bebü Bot</span>
+        <span className="font-display font-bold text-sm hidden sm:inline">{t('chatbot.title')}</span>
       </button>
 
       <div
@@ -131,7 +136,7 @@ export default function Chatbot() {
             <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
               <Bot className="w-4 h-4" />
             </div>
-            Bebü Bot
+            { t('chatbot.title') }
           </div>
           <button
             onClick={() => setIsOpen(false)}
@@ -180,7 +185,7 @@ export default function Chatbot() {
               </div>
               <div className="px-4 py-3 rounded-2xl bg-surface-container-lowest border border-outline-variant/20 rounded-tl-sm flex items-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin text-outline" />
-                <span className="text-sm text-on-surface-variant">Thinking…</span>
+                <span className="text-sm text-on-surface-variant">{t('chatbot.thinking')}</span>
               </div>
             </div>
           )}
@@ -199,7 +204,7 @@ export default function Chatbot() {
             </div>
           ) : (
             <p className="mb-3 text-[11px] text-outline">
-              AI provider from Preferences · {provider}
+              { t('chatbot.AItext', {provider}) }
               {model.trim() ? ` · ${model}` : ''}
             </p>
           )}
@@ -208,7 +213,7 @@ export default function Chatbot() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask about recipes, ingredients..."
+              placeholder={t('chatbot.fields.q.placeholder')}
               className="w-full bg-surface-container-low border border-transparent focus:bg-surface-container-lowest dark:focus:bg-surface-container-lowest focus:border-primary/30 focus:ring-2 focus:ring-primary/20 rounded-2xl px-4 py-2.5 pr-12 resize-none h-11 text-sm transition-all text-on-surface placeholder:text-outline"
               rows={1}
             />
