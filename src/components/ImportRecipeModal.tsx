@@ -16,6 +16,7 @@ import {
   structuredAiLanguagePayload,
 } from '../lib/ai-settings';
 import { aiJobModelLabel, useAiJobQueue } from '../context/AiJobQueueContext';
+import { useTranslation } from 'react-i18next';
 
 interface ImportRecipeModalProps {
   isOpen: boolean;
@@ -24,6 +25,7 @@ interface ImportRecipeModalProps {
 }
 
 export default function ImportRecipeModal({ isOpen, onClose, onSave }: ImportRecipeModalProps) {
+  const { t } = useTranslation();
   const { runWithAiJob } = useAiJobQueue();
   const mountedRef = useRef(true);
   useEffect(() => {
@@ -75,7 +77,7 @@ export default function ImportRecipeModal({ isOpen, onClose, onSave }: ImportRec
       await runWithAiJob(
         {
           kind: 'import-recipe',
-          title: 'Import recipe',
+          title: t('importRecipeModal.title'),
           relatedLabel: related,
           providerId: provider,
           modelLabel: aiJobModelLabel(provider, model),
@@ -104,11 +106,11 @@ export default function ImportRecipeModal({ isOpen, onClose, onSave }: ImportRec
           });
           const data = await res.json().catch(() => ({}));
           if (!res.ok) {
-            throw new Error(data.error || 'Import failed');
+            throw new Error(data.error || t('importRecipeModal.errors.importFailed'));
           }
 
           if (!data.name || !data.ingredients) {
-            throw new Error('Failed to parse recipe data. Please try another query.');
+            throw new Error(t('importRecipeModal.errors.parse'));
           }
 
           if (mountedRef.current) {
@@ -120,7 +122,7 @@ export default function ImportRecipeModal({ isOpen, onClose, onSave }: ImportRec
     } catch (err: unknown) {
       console.error('Import error:', err);
       setError(
-        err instanceof Error ? err.message : 'An error occurred while importing the recipe.',
+        err instanceof Error ? err.message : t('importRecipeModal.errors.default'),
       );
     } finally {
       setLoading(false);
@@ -157,10 +159,10 @@ export default function ImportRecipeModal({ isOpen, onClose, onSave }: ImportRec
             </div>
             <div>
               <h2 className="text-xl font-display font-extrabold text-primary-container dark:text-primary-fixed-dim tracking-tight">
-                Import Recipe
+                {t('importRecipeModal.title')}
               </h2>
               <p className="text-xs text-on-surface-variant mt-0.5">
-                Find a recipe anywhere on the web.
+                {t('importRecipeModal.subtitle')}
               </p>
             </div>
           </div>
@@ -174,7 +176,7 @@ export default function ImportRecipeModal({ isOpen, onClose, onSave }: ImportRec
 
         <div className="px-6 pb-2 space-y-4">
           <p className="text-sm text-on-surface-variant leading-relaxed">
-            Enter a recipe name or URL. Bebü Bot will search the web, extract ingredients, and estimate nutrition for you.
+            {t('importRecipeModal.text')}
           </p>
 
           {showAiProviderPickerInModals() ? (
@@ -188,7 +190,7 @@ export default function ImportRecipeModal({ isOpen, onClose, onSave }: ImportRec
             </div>
           ) : (
             <p className="text-xs text-on-surface-variant">
-              Using saved AI provider from Preferences.
+              {t('grocery.smartGroupPopup.AItext')}
             </p>
           )}
 
@@ -196,13 +198,13 @@ export default function ImportRecipeModal({ isOpen, onClose, onSave }: ImportRec
             <ResponseLanguageSelector value={responseLanguage} onChange={handleResponseLanguageChange} />
           ) : (
             <p className="text-xs text-on-surface-variant">
-              Using saved response language from Preferences.
+              {t('grocery.smartGroupPopup.langText')}
             </p>
           )}
 
           <div>
             <label className="block text-[11px] font-display font-bold uppercase tracking-widest text-outline mb-2">
-              Recipe search or URL
+              {t('importRecipeModal.fields.search.label')}
             </label>
             <div className="relative">
               <LinkIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
@@ -210,7 +212,7 @@ export default function ImportRecipeModal({ isOpen, onClose, onSave }: ImportRec
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="e.g. Chocolate chip cookies or https://..."
+                placeholder={t('importRecipeModal.fields.search.placeholder')}
                 className="w-full pl-11 pr-4 py-3 bg-surface-container-lowest border border-outline-variant/30 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/30 text-on-surface placeholder:text-outline"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleImport();
@@ -231,7 +233,7 @@ export default function ImportRecipeModal({ isOpen, onClose, onSave }: ImportRec
             onClick={onClose}
             className="px-5 py-2.5 text-on-surface-variant font-display font-semibold text-sm rounded-full hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors"
           >
-            Cancel
+            {t('importRecipeModal.buttons.cancel')}
           </button>
           <button
             onClick={handleImport}
@@ -241,12 +243,12 @@ export default function ImportRecipeModal({ isOpen, onClose, onSave }: ImportRec
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Importing...
+                {t('importRecipeModal.buttons.loading')}
               </>
             ) : (
               <>
                 <Search className="w-4 h-4" />
-                Import Recipe
+                {t('importRecipeModal.buttons.import')}
               </>
             )}
           </button>

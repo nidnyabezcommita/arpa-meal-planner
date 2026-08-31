@@ -1,0 +1,625 @@
+{
+  "addMealModal": {
+    "title": {
+      "edit": "Tarifi Düzenle",
+      "add": "Yeni Tarif Ekle"
+    },
+    "subtitle": "Yemeğinizin her ayrıntısını yakalayın.",
+    "fields": {
+      "name": {
+        "label": "Yemek Adı *",
+        "placeholder": "Örn. Bebu Köftesi"
+      },
+      "tag": {
+        "label": "Etiket",
+        "placeholder": "Örn. Akdeniz, Kahvaltı"
+      },
+      "servings": {
+        "label": "Varsayılan Porsiyon *",
+        "placeholder": ""
+      },
+      "url": {
+        "label": "Kaynak URL",
+        "placeholder": "https://..."
+      },
+      "image": {
+        "label": "Yemek Görseli",
+        "placeholder": ""
+      },
+      "instructions": {
+        "label": "Talimatlar",
+        "placeholder": ""
+      },
+      "step": {
+        "label": "",
+        "placeholder": "Adım"
+      },
+      "ingredients": {
+        "label": "Malzemeler",
+        "placeholder": ""
+      },
+      "ingredient": {
+        "label": "",
+        "placeholder": "Malzeme"
+      },
+      "amount": {
+        "label": "",
+        "placeholder": "Miktar"
+      },
+      "calories": {
+        "label": "Kalori",
+        "placeholder": "Kalori"
+      },
+      "protein": {
+        "label": "Protein",
+        "placeholder": "Protein (g)"
+      },
+      "fat": {
+        "label": "Yağ",
+        "placeholder": "Yağ (g)"
+      },
+      "carbs": {
+        "label": "Karbonhidrat",
+        "placeholder": "Karbonhidrat (g)"
+      },
+      "imageUrl": {
+        "placeholder": "Görsel URL'sini yapıştır..."
+      }
+    },
+    "links": {
+      "addStep": "Adım Ekle",
+      "fetchInstructions": "Talimatları Getir",
+      "estimate": "Besin Değerlerini Tahmin Et",
+      "addIngredient": "Malzeme Ekle"
+    },
+    "texts": {
+      "noImage": "Görsel seçilmedi",
+      "noInstructions": "Henüz talimat eklenmedi. Başlamak için \"Adım Ekle\"ye tıklayın."
+    },
+    "buttons": {
+      "upload": "Yükle",
+      "camera": "Kamera",
+      "url": "URL",
+      "add": "Yemek Ekle",
+      "cancel": "İptal",
+      "save": "Değişiklikleri Kaydet"
+    },
+    "errors": {
+      "camera": "Kameraya erişilemedi. Lütfen izinleri kontrol edin.",
+      "nutrition": "Besin değerleri tahmin edilemedi",
+      "instructions": "Talimatlar zaten mevcut. Yenilerini getirmek için önce mevcutları temizleyin.",
+      "meal": "Yemek kaydedilemedi",
+      "fetchInstructions": "Talimatlar getirilemedi",
+      "noInstructions": "Herhangi bir talimat döndürülmedi."
+    },
+    "nutrition": "Besin değerleri AI tahminlerine göre güncellendi.",
+    "responseLangMsg": "AI talimatları ve besin değerleri için Tercihler'den kaydedilen yanıt dili kullanılıyor.",
+    "meal": "Yemek",
+    "untitledMeal": "İsimsiz yemek",
+    "successInstruction": "Talimatlar başarıyla getirildi.",
+    "imagePreview": "Yemek görseli önizlemesi"
+  },
+  "aiJobQueuePanel": {
+    "jobs": "AI işleri",
+    "click": "Düzenleyicide açmak için tıklayın",
+    "language": "Dil",
+    "running": "Çalışıyor",
+    "buttons": {
+      "clear": "Tamamlananları temizle"
+    },
+    "labels": {
+      "jobs": "AI işleri: {{runningCount}} çalışıyor, toplam {{length}}. Kuyruğu genişlet.",
+      "queue": "AI iş kuyruğu",
+      "minimize": "AI iş kuyruğunu küçült",
+      "result": "{{title}}: sonucu uygulamada aç",
+      "dismiss": "İşi kapat"
+    }
+  },
+  "aiProviderSelector": {
+    "fields": {
+      "AiProvider": {
+        "label": "AI Sağlayıcı"
+      },
+      "model": {
+        "label": "Model (isteğe bağlı)",
+        "placeholder": "Sağlayıcı varsayılanını kullan"
+      }
+    },
+    "disable": "Görsel oluşturma şu anda yalnızca Google sağlayıcısını desteklemektedir."
+  },
+  "app": {
+    "logo": {
+      "title": "ARPA",
+      "subtitle": "Yemek Planlayıcı"
+    },
+    "nav": {
+      "dashboard": "Kontrol Paneli",
+      "planner": "Planlayıcı",
+      "grocery": "Alışveriş Listesi",
+      "pantry": "Kiler",
+      "familySync": "Aile Senkronizasyonu",
+      "personal": "Kişisel",
+      "chef": {
+        "title": "Şef",
+        "subtitle": "Profil ve ayarlar"
+      }
+    },
+    "mobileNav": {
+      "home": "Ana Sayfa",
+      "planner": "Planlayıcı",
+      "grocery": "Alışveriş",
+      "pantry": "Kiler",
+      "settings": "Ayarlar"
+    },
+    "pageTitle": {
+      "dashboard": "Kontrol Paneli",
+      "planner": "Haftalık Planlayıcı",
+      "grocery": "Alışveriş Listesi",
+      "pantry": "Kiler Envanteri",
+      "preferences": "Tercihler",
+      "appName": "ARPA: Yemek Planlayıcı"
+    },
+    "placeholders": {
+      "search": "Tarif, malzeme ara..."
+    },
+    "buttons": {
+      "theme": {
+        "light": "Açık temaya geç",
+        "dark": "Koyu temaya geç"
+      },
+      "notifications": "Bildirimler",
+      "nextWeek": "Gelecek hafta",
+      "previousWeek": "Önceki hafta",
+      "close": "Kapat"
+    }
+  },
+  "chatbot": {
+    "title": "Bebü Bot",
+    "AItext": "Tercihler'den AI sağlayıcı · {{provider}}",
+    "message": "Merhaba Bebü! Ben senin yemek planlama asistanınım. Bana tarifler, malzemeler veya haftalık planın hakkında sorular sorabilirsin.",
+    "fields": {
+      "q": {
+        "placeholder": "Tarifler, malzemeler hakkında sor..."
+      }
+    },
+    "thinking": "Düşünüyor…",
+    "errors": {
+      "request": "Sohbet isteği başarısız oldu",
+      "unknown": "Bilinmeyen hata",
+      "response": "Hata: {{message}}"
+    }
+  },
+  "dashboard": {
+    "pageTitle": "Tekrar hoş geldiniz, Gurme.",
+    "pageSubtitle": "{{from}} - {{to}} arası beslenme ve yemekler.",
+    "confirmDelete": "Bu yemeği silmek istediğinizden emin misiniz?",
+    "buttons": {
+      "currentWeek": "Bu Hafta",
+      "importRecipe": "Tarif İçe Aktar",
+      "addMeal": "Yemek Ekle"
+    },
+    "widgets": {
+      "calories": {
+        "title": "Kalori",
+        "subtitle": "kcal/günlük"
+      },
+      "protein": {
+        "title": "Protein",
+        "units": "g"
+      },
+      "carbs": {
+        "title": "Karbonhidrat",
+        "units": "g"
+      },
+      "fat": {
+        "title": "Yağ",
+        "units": "g"
+      }
+    },
+    "weeklyOverview": {
+      "title": "Haftalık Genel Bakış",
+      "links": {
+        "viewCalendar": "Takvimi Görüntüle",
+        "recipeDetails": "Tarif Detayları"
+      },
+      "today": "Bugün",
+      "count": "{{ingredients}} malzeme / {{servings}} porsiyon",
+      "empty": "Haftalık genel bakışınızı görmek için planlayıcınıza yemek ekleyin."
+    },
+    "grocery": {
+      "title": "Alışveriş Listesi",
+      "empty": "Bu hafta için alışveriş öğesi gerekmiyor.",
+      "links": {
+        "open": "Alışveriş listesini aç"
+      }
+    },
+    "pantry": {
+      "title": "Kiler Stok Uyarıları",
+      "empty": "Kiler seviyeleri sağlıklı görünüyor.",
+      "alert": {
+        "title": "{{name}} azaldı",
+        "amount": "Sadece {{amount}} {{measure}} kaldı"
+      }
+    },
+    "promo": {
+      "title": "Yemek Hazırlama Sanatında Ustalaşın.",
+      "text": "AI'mız kilerinizi ve isteklerinizi analiz ederek israfı azaltan ve mutfağınızı geliştiren özel bir haftalık menü oluşturur.",
+      "button": "Haftalık Planımı Optimize Et"
+    },
+    "recipes": {
+      "title": "Tarif Kütüphanesi",
+      "meal": "yemek",
+      "meals": "yemek",
+      "search": {
+        "placeholder": "Tarif, malzeme ara..."
+      },
+      "all": "Tümü",
+      "empty": {
+        "title": "Hiç yemek bulunamadı",
+        "subtitle": "Aramanızı değiştirmeyi deneyin veya yeni bir yemek ekleyin."
+      }
+    }
+  },
+  "familySyncModal": {
+    "title": "Aile Senkronizasyonu",
+    "text": "Yemekleri, planlayıcıyı ve alışveriş listelerini cihazlar arasında senkronize etmek için ortak bir aile kodu girin. Kişisel kullanım için boş bırakın.",
+    "fields": {
+      "code": {
+        "label": "Aile Kodu",
+        "placeholder": "Örn. smith-ailesi-2024"
+      }
+    },
+    "buttons": {
+      "cancel": "İptal",
+      "save": "Kaydet ve Senkronize Et"
+    }
+  },
+  "generatePlanModal": {
+    "title": "Haftalık Plan Oluştur",
+    "subtitle": "Bebü Bot AI tarafından desteklenmektedir",
+    "text": "AI'nın aşağıdaki tarihten başlayarak eksiksiz bir 7 günlük yemek planı oluşturmasına izin verin",
+    "AItext": "Tercihler'den kaydedilen AI sağlayıcı kullanılıyor.",
+    "langText": "Tercihler'den kaydedilen yanıt dili kullanılıyor.",
+    "dietary": "Beslenme Tercihi",
+    "jobTitle": "Haftalık plan oluştur",
+    "errors": {
+      "generate": "Yemek planı oluşturulamadı",
+      "default": "Yemek planı oluşturulurken bir hata oluştu."
+    },
+    "buttons": {
+      "cancel": "İptal",
+      "loading": "Oluşturuluyor...",
+      "generate": "Plan Oluştur"
+    },
+    "diets": {
+      "any": "Herhangi / Dengeli",
+      "vegan": "Vegan",
+      "paleo": "Paleo",
+      "lowCarb": "Düşük Karbonhidrat",
+      "vegetarian": "Vejetaryen",
+      "keto": "Keto",
+      "highProtein": "Yüksek Protein",
+      "mediterranean": "Akdeniz"
+    }
+  },
+  "grocery": {
+    "title": "Alışveriş Listesi",
+    "subtitle": "Kiler öğeleri otomatik olarak hariç tutulur.",
+    "banner": {
+      "title": "Kiler Senkronizasyonu Aktif",
+      "subtitle": "Kiler öğeleri, daha temiz bir alışveriş deneyimi için alışveriş hesaplamalarından hariç tutulur.",
+      "link": "Kileri Düzenle"
+    },
+    "title2": "Alışveriş Listesi",
+    "measure": {
+      "unit_one": "Adet",
+      "unit_other": "Adet"
+    },
+    "categories": {
+      "dairyCold": "Süt Ürünleri ve Soğuk Ürünler",
+      "freshProduce": "Taze Meyve ve Sebze",
+      "meatSeafood": "Et ve Deniz Ürünleri",
+      "bakery": "Fırın Ürünleri",
+      "pantry": "Kiler",
+      "frozen": "Dondurulmuş Ürünler"
+    },
+    "pdf": {
+      "title": "Market Listesi",
+      "week": "Hafta: {{from}} - {{to}}",
+      "yes": "Var",
+      "no": "Yok",
+      "headers": {
+        "done": "Tamam?",
+        "item": "Kalem",
+        "amount": "Miktar"
+      },
+      "filename": "Market-Listesi"
+    },
+    "empty": {
+      "title": "Listeniz boş",
+      "subtitle": "Alışveriş listesi oluşturmak için haftalık planlayıcınıza yemek ekleyin."
+    },
+    "buttons": {
+      "all": "Tüm Kategoriler",
+      "sort": "Sırala",
+      "merge": "Benzer Öğeleri Birleştir",
+      "group": "Akıllı Grupla",
+      "export": "PDF Olarak Dışa Aktar"
+    },
+    "mergePopup": {
+      "title": "Benzer İsimleri Birleştir",
+      "empty": "Bu haftanın alışveriş isimlerinde yakın eşleşme bulunamadı.",
+      "suggestedGroup": "Önerilen Grup",
+      "selectAll": "Tümünü Seç",
+      "fields": {
+        "addItem": {
+          "label": "Manuel olarak öğe ekle",
+          "placeholder": "İsimleri ara (Örn. Tereyağı)"
+        },
+        "mergeInto": {
+          "label": "Şununla birleştir",
+          "placeholder": "Hedef ismi seçin"
+        }
+      },
+      "noMatches": "Başka eşleşme yok.",
+      "confirm": "{{count}} ismi \"{{target}}\" altında birleştirilsin mi? Bu işlem yemek malzemelerini ve kiler adlarını günceller.",
+      "success": "{{count}} isim \"{{target}}\" altında birleştirildi.",
+      "errors": {
+        "selectTwo": "Birleştirmek için en az 2 isim seçin.",
+        "selectTarget": "Seçilen öğelerden geçerli bir hedef isim seçin.",
+        "endpoint": "Birleştirme uç noktası kullanılamıyor (404). En güncel backend rotalarını yüklemek için geliştirme sunucusunu yeniden başlatın.",
+        "default": "İsimler birleştirilemedi"
+      },
+      "buttons": {
+        "close": "Kapat",
+        "apply": "Birleştirmeyi Uygula",
+        "merging": "Birleştiriliyor..."
+      }
+    },
+    "smartGroupPopup": {
+      "AItext": "Tercihler'den kaydedilen AI sağlayıcı kullanılıyor.",
+      "langText": "Tercihler'den kaydedilen yanıt dili kullanılıyor.",
+      "jobTitle": "Alışverişi akıllı grupla",
+      "itemCount": "Alışveriş listesi ({{count}} öğe)",
+      "errors": {
+        "request": "Gruplama isteği başarısız oldu",
+        "rateLimit": "Bebü Bot şu anda biraz meşgul (hız sınırına ulaşıldı). Sizin için temel bir gruplama uyguladım!",
+        "fallback": "Gruplama sırasında bir sorun oluştu. Yaygın öğeleri olabildiğince sınıflandırdım."
+      },
+      "buttons": {
+        "close": "Kapat",
+        "run": "Gruplamayı Çalıştır"
+      }
+    }
+  },
+  "imageGenerator": {
+    "title": "Görsel Oluştur",
+    "subtitle": "Nano Banana Pro tarafından desteklenmektedir",
+    "text": "Şunun için özel bir illüstrasyon oluşturun:",
+    "fields": {
+      "quality": {
+        "label": "Görsel Kalitesi",
+        "options": {
+          "1K": "1K · Standart",
+          "2K": "2K · Yüksek Kalite",
+          "4K": "4K · Ultra HQ"
+        }
+      }
+    },
+    "buttons": {
+      "generate": "Görsel Oluştur",
+      "loading": "Oluşturuluyor...",
+      "cancel": "İptal"
+    },
+    "googleText": "Yemek görselleri her zaman Google kullanır. Model, uygulanabilir olduğunda Gemini ayarlarınızı takip eder; aksi halde Google varsayılanı geçerlidir.",
+    "errors": {
+      "onlyGoogle": "Görsel oluşturma şu anda yalnızca Google sağlayıcısını desteklemektedir.",
+      "default": "Bir hata oluştu",
+      "noImage": "Herhangi bir görsel döndürülmedi"
+    }
+  },
+  "importRecipeModal": {
+    "title": "Tarif İçe Aktar",
+    "subtitle": "Web'de herhangi bir yerde bir tarif bulun.",
+    "text": "Bir tarif adı veya URL girin. Bebü Bot web'de arama yapacak, malzemeleri çıkaracak ve sizin için besin değerlerini tahmin edecek.",
+    "fields": {
+      "search": {
+        "label": "Tarif araması veya URL",
+        "placeholder": "Örn. Çikolatalı kurabiye veya https://..."
+      }
+    },
+    "buttons": {
+      "cancel": "İptal",
+      "import": "Tarifi İçe Aktar",
+      "loading": "İçe aktarılıyor..."
+    },
+    "errors": {
+      "default": "Tarif içe aktarılırken bir hata oluştu.",
+      "parse": "Tarif verileri ayrıştırılamadı. Lütfen başka bir sorgu deneyin.",
+      "importFailed": "İçe aktarma başarısız oldu"
+    }
+  },
+  "mealCard": {
+    "count": "{{ingredients}} malzeme / {{servings}} porsiyon",
+    "noImage": "Görsel yok",
+    "menu": {
+      "edit": "Yemek Düzenle",
+      "generateImage": "Görsel Oluştur",
+      "delete": "Sil"
+    },
+    "ingredients": "Malzemeler",
+    "kcal": "kcal",
+    "more": "daha fazla"
+  },
+  "mealDetailsModal": {
+    "noImageText": "Görsel mevcut değil",
+    "ingredients": "malzeme",
+    "servings": "porsiyon",
+    "base": "temel",
+    "edit": "Yemek Düzenle",
+    "viewOriginal": "Orijinal Tarifi Görüntüle",
+    "nutrients": {
+      "calories": "Kal",
+      "protein": "Pro",
+      "fat": "Yağ",
+      "carbs": "Karb"
+    },
+    "ingredientsList": {
+      "title": "Malzemeler"
+    },
+    "instructions": {
+      "title": "Talimatlar",
+      "empty": {
+        "title": "Bu yemek için talimat mevcut değil.",
+        "subtitle": "Adım adım talimatlar eklemek için yemeği düzenleyin."
+      },
+      "step": "{{count}}'nin {{number}}. adımı",
+      "next": "Sonraki",
+      "prev": "Önceki"
+    }
+  },
+  "pantry": {
+    "title": "Kiler Envanteri",
+    "subtitle": "Alışveriş listenizin doğru olması için stoğu takip edin.",
+    "banner": {
+      "link": "Alışverişi Görüntüle"
+    },
+    "title2": "Stoktaki Öğeler",
+    "subtitle2": "Buradaki öğeler alışveriş listenizden çıkarılır.",
+    "empty": {
+      "title": "Kileriniz boş",
+      "subtitle": "Alışveriş listenizi doğru tutmak için yan panelden öğe ekleyin."
+    },
+    "items": {
+      "title": "Kiler Öğesi",
+      "remove": "{{name}}'yi kaldır"
+    },
+    "form": {
+      "title": "Kilere Ekle",
+      "subtitle": "Yeni stok öğelerini hızlıca kaydedin.",
+      "fields": {
+        "name": {
+          "label": "Öğe Adı",
+          "placeholder": "Örn. Avokado Yağı"
+        },
+        "quantity": {
+          "label": "Miktar"
+        },
+        "unit": {
+          "label": "Birim"
+        }
+      },
+      "button": "Öğeyi Stok Ekle"
+    },
+    "tip": {
+      "title": "Hızlı Envanter İpucu",
+      "text": "Kilerinizi güncel tutmak, ARPA'nın zaten sahip olduklarınıza göre daha iyi tarifler önermesine yardımcı olur, böylece gıda israfını ve alışveriş harcamalarını azaltır."
+    }
+  },
+  "planner": {
+    "title": "Haftalık Planlayıcı",
+    "subtitle": "Tarifleri haftalık programınıza sürükleyin veya planlanmış yemekleri günler arasında taşıyın.",
+    "buttons": {
+      "generatePlan": "Plan Oluştur",
+      "remove": "Planlayıcıdan kaldır",
+      "decrease": "Porsiyon azalt",
+      "increase": "Porsiyon artır",
+      "add": "Hızlı Ekle"
+    },
+    "today": "Bugün",
+    "select": "Bir yemek seç…",
+    "servings": "porsiyon",
+    "dropHere": "Yemeği buraya bırak",
+    "moveAria": "{{name}} yemeğini başka bir güne taşı",
+    "mealOptionServings": "{{count}} porsiyon",
+    "discovery": {
+      "title": "Tarif Keşfi",
+      "subtitle": "Tarifleri takviminize sürükleyin",
+      "search": {
+        "placeholder": "İlham bul…"
+      },
+      "empty": "Aramanızla eşleşen tarif yok. Filtreleri temizlemeyi deneyin.",
+      "all": "Tümü",
+      "count": "{{ingredients}} malzeme / {{servings}} porsiyon"
+    },
+    "errors": {
+      "move": "Yemeği taşımayı başaramadı",
+      "update": "Servis sayısını güncelleme işlemi başarısız oldu"
+    }
+  },
+  "preferences": {
+    "title": "Tercihler",
+    "subtitle": "Yeni tarifler, takvim düzeni, görünüm ve AI davranışı için varsayılanlar.",
+    "interfaceLanguage": {
+      "title": "Arayüz Dili",
+      "text": "ARPA genelinde kullanılacak dili seçin. Seçiminiz bu tarayıcıda kaydedilir.",
+      "label": "Dil"
+    },
+    "meals": {
+      "title": "Yemekler",
+      "text": "Yeni bir tarif eklediğinizde veya açık bir porsiyon değeri olmadan içe aktardığınızda geçerlidir.",
+      "fields": {
+        "servings": {
+          "label": "Varsayılan porsiyon (1–100)"
+        }
+      },
+      "buttons": {
+        "save": "Porsiyonları kaydet",
+        "saved": "Kaydedildi"
+      }
+    },
+    "calendar": {
+      "title": "Takvim",
+      "text": "Kontrol Paneli önizlemeleri, Planlayıcı ve alışveriş hafta aralıkları için haftanın ilk günü.",
+      "monday": "Pazartesi",
+      "sunday": "Pazar"
+    },
+    "appearance": {
+      "title": "Görünüm",
+      "text": "Sistem, işletim sisteminizin açık/koyu ayarını takip eder. Masaüstü başlığı ve mobil çubuk tema simgeleri, açık ve koyu arasında geçiş yapar (kullanıldığında Sistem modundan çıkar).",
+      "light": "Açık",
+      "dark": "Koyu",
+      "system": "Sistem"
+    },
+    "ai": {
+      "title": "AI",
+      "fields": {
+        "providerUi": {
+          "label": "Sağlayıcı Arayüzü",
+          "options": {
+            "choose": {
+              "title": "Her istek için sağlayıcı seç",
+              "text": "Sohbet, içe aktarma, plan oluşturma, görseller ve alışveriş gruplama üzerinde sağlayıcı seçiciyi göster."
+            },
+            "one": {
+              "title": "Her şey için tek bir sağlayıcı kullan",
+              "text": "Satır içi seçicileri gizle; tüm AI çağrıları aşağıdaki sağlayıcı ve modeli kullanır."
+            }
+          }
+        },
+        "lang": {
+          "label": "Dil Arayüzü",
+          "options": {
+            "choose": {
+              "title": "Her istek için dil seç",
+              "text": "İçe aktarma, plan oluşturma, alışveriş gruplama ve yemek AI eylemlerinde dil seçimini göster. Sohbet, mesajınızın dilini otomatik olarak takip eder."
+            },
+            "one": {
+              "title": "Yapılandırılmış AI için tek bir dil kullan",
+              "text": "Satır içi dil seçicileri gizle; içe aktarma, planlar, alışveriş ve yemek AI aşağıdaki dili kullanır."
+            }
+          }
+        }
+      },
+      "langHelper": "Mümkün olduğunda girdilerinizden dili otomatik olarak çıkarır; aksi halde tarayıcı bölgenizi ipucu olarak kullanır.",
+      "imageText": "Görsel oluşturma her zaman Google'ın görsel modelini kullanır. Kaydedilmiş sohbet sağlayıcınız Ollama veya MLX ise, yemek görselleri yine otomatik olarak Google'da çalışır."
+    }
+  },
+  "responseLanguageSelector": {
+    "fields": {
+      "language": {
+        "label": "Yanıt dili"
+      }
+    }
+  }
+}

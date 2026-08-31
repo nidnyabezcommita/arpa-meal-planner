@@ -27,6 +27,7 @@ import {
 import { loadDefaultServings } from '../lib/preferences';
 import { aiJobModelLabel, useAiJobQueue } from '../context/AiJobQueueContext';
 import { applyNutritionEstimatesToIngredients } from '../lib/ai-job-apply';
+import { useTranslation } from 'react-i18next';
 
 interface AddMealModalProps {
   isOpen: boolean;
@@ -48,6 +49,7 @@ export default function AddMealModal({
   scrollToIngredientsOnOpen = false,
   onScrollToIngredientsConsumed,
 }: AddMealModalProps) {
+  const { t } = useTranslation();
   const { runWithAiJob } = useAiJobQueue();
   const [name, setName] = useState('');
   const [tag, setTag] = useState('');
@@ -156,7 +158,7 @@ export default function AddMealModal({
       }
     } catch (err) {
       console.error('Error accessing camera:', err);
-      alert('Could not access camera. Please check permissions.');
+      alert(t('addMealModal.errors.camera'));
     }
   };
 
@@ -240,7 +242,7 @@ export default function AddMealModal({
     setIsEstimatingNutrition(true);
     const { provider, model } = loadAiSettings();
     const lang = effectiveResponseLanguage();
-    const mealLabel = (name.trim() || 'Untitled meal').slice(0, 80);
+    const mealLabel = (name.trim() || t('addMealModal.untitledMeal')).slice(0, 80);
     const ingredientSnapshot = ingredients.map((i) => ({ ...i }));
     const nameSnap = name.trim();
     const tagSnap = tag.trim();
@@ -254,7 +256,7 @@ export default function AddMealModal({
       await runWithAiJob(
         {
           kind: 'estimate-nutrition',
-          title: 'Estimate nutrition',
+          title: t('addMealModal.links.estimate'),
           relatedLabel: mealLabel,
           providerId: provider,
           modelLabel: aiJobModelLabel(provider, model),
@@ -275,7 +277,7 @@ export default function AddMealModal({
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              mealName: name.trim() || 'Untitled meal',
+              mealName: name.trim() || t('addMealModal.untitledMeal'),
               ingredients: validIngredients,
               provider,
               model: model.trim() || undefined,
@@ -284,7 +286,7 @@ export default function AddMealModal({
           });
           const data = await res.json().catch(() => ({}));
           if (!res.ok) {
-            throw new Error((data as { error?: string }).error || 'Failed to estimate nutrition');
+            throw new Error((data as { error?: string }).error || t('addMealModal.errors.nutrition'));
           }
 
           const estimated = Array.isArray((data as { ingredients?: unknown[] }).ingredients)
@@ -304,14 +306,14 @@ export default function AddMealModal({
 
           if (mountedRef.current) {
             setIngredients(merged);
-            setNutritionInfo('Nutrition fields updated from AI estimates.');
+            setNutritionInfo(t('addMealModal.nutrition'));
           }
 
           return { mealId, partial };
         },
       );
     } catch (error) {
-      setNutritionError(error instanceof Error ? error.message : 'Failed to estimate nutrition');
+      setNutritionError(error instanceof Error ? error.message : t('addMealModal.errors.nutrition'));
     } finally {
       setIsEstimatingNutrition(false);
     }
@@ -322,7 +324,7 @@ export default function AddMealModal({
     setInstructionsInfo(null);
     if (!canFetchInstructions) {
       if (hasAnyInstructions) {
-        setInstructionsError('Instructions already exist. Clear them first to fetch replacements.');
+        setInstructionsError(t('addMealModal.errors.instructions'));
       }
       return;
     }
@@ -343,8 +345,8 @@ export default function AddMealModal({
       await runWithAiJob(
         {
           kind: 'fetch-instructions',
-          title: 'Fetch instructions',
-          relatedLabel: mealLabel || 'Meal',
+          title: t('addMealModal.links.fetchInstructions'),
+          relatedLabel: mealLabel || t('addMealModal.meal'),
           providerId: provider,
           modelLabel: aiJobModelLabel(provider, model),
           languageLabel: aiJobLanguageLabel(lang),
@@ -374,7 +376,7 @@ export default function AddMealModal({
           });
           const data = await res.json().catch(() => ({}));
           if (!res.ok) {
-            throw new Error((data as { error?: string }).error || 'Failed to fetch instructions');
+            throw new Error((data as { error?: string }).error || t('addMealModal.errors.fetchInstructions'));
           }
 
           const nextInstructions = Array.isArray((data as { instructions?: unknown[] }).instructions)
@@ -383,7 +385,7 @@ export default function AddMealModal({
                 .filter(Boolean))
             : [];
           if (nextInstructions.length === 0) {
-            throw new Error('No instructions were returned.');
+            throw new Error(t('addMealModal.errors.noInstructions'));
           }
           let resolvedSource = sourceUrlSnap || null;
           if (typeof (data as { sourceUrl?: unknown }).sourceUrl === 'string') {
@@ -404,14 +406,14 @@ export default function AddMealModal({
           if (mountedRef.current) {
             setInstructions(nextInstructions);
             if (resolvedSource) setSourceUrl(resolvedSource);
-            setInstructionsInfo('Instructions fetched successfully.');
+            setInstructionsInfo(t('addMealModal.successInstruction'));
           }
 
           return { mealId, partial };
         },
       );
     } catch (error) {
-      setInstructionsError(error instanceof Error ? error.message : 'Failed to fetch instructions');
+      setInstructionsError(error instanceof Error ? error.message : t('addMealModal.errors.fetchInstructions'));
     } finally {
       setIsFetchingInstructions(false);
     }
@@ -447,12 +449,12 @@ export default function AddMealModal({
             });
       const errBody = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error((errBody as { error?: string }).error || 'Failed to save meal');
+        throw new Error((errBody as { error?: string }).error || t('addMealModal.errors.meal'));
       }
       onSave();
     } catch (error) {
-      console.error('Failed to save meal', error);
-      alert(error instanceof Error ? error.message : 'Failed to save meal');
+      console.error(t('addMealModal.errors.meal'), error);
+      alert(error instanceof Error ? error.message : t('addMealModal.errors.meal'));
     }
   };
 
@@ -468,10 +470,10 @@ export default function AddMealModal({
         <div className="px-6 py-5 flex justify-between items-center sticky top-0 bg-surface z-10 border-b border-outline-variant/15">
           <div>
             <h2 className="text-xl font-display font-extrabold text-primary-container dark:text-primary-fixed-dim tracking-tight">
-              {editingMeal && editingMeal.id ? 'Edit Recipe' : 'Add New Recipe'}
+              {editingMeal && editingMeal.id ? t('addMealModal.title.edit') : t('addMealModal.title.add')}
             </h2>
             <p className="text-xs text-on-surface-variant mt-0.5">
-              Capture every detail of your dish.
+              {t('addMealModal.subtitle')}
             </p>
           </div>
           <button
@@ -486,30 +488,30 @@ export default function AddMealModal({
           <div className="space-y-7">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className={fieldLabel}>Meal Name *</label>
+                <label className={fieldLabel}>{t('addMealModal.fields.name.label')}</label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Bebu Koftesi"
+                  placeholder={t('addMealModal.fields.name.placeholder')}
                   className={inputClass}
                 />
               </div>
               <div>
-                <label className={fieldLabel}>Tag</label>
+                <label className={fieldLabel}>{t('addMealModal.fields.tag.label')}</label>
                 <input
                   type="text"
                   value={tag}
                   onChange={(e) => setTag(e.target.value)}
-                  placeholder="e.g. Mediterranean, Breakfast"
+                  placeholder={t('addMealModal.fields.tag.placeholder')}
                   className={inputClass}
                 />
               </div>
             </div>
 
             <div className="max-w-xs">
-              <label className={fieldLabel}>Default Servings *</label>
+              <label className={fieldLabel}>{t('addMealModal.fields.servings.label')}</label>
               <input
                 type="number"
                 min="1"
@@ -523,24 +525,24 @@ export default function AddMealModal({
             </div>
 
             <div>
-              <label className={fieldLabel}>Source URL</label>
+              <label className={fieldLabel}>{t('addMealModal.fields.url.label')}</label>
               <input
                 type="url"
                 value={sourceUrl}
                 onChange={(e) => setSourceUrl(e.target.value)}
-                placeholder="https://..."
+                placeholder={t('addMealModal.fields.url.placeholder')}
                 className={inputClass}
               />
             </div>
 
             <div>
-              <label className={fieldLabel}>Meal Image</label>
+              <label className={fieldLabel}>{t('addMealModal.fields.image.label')}</label>
               <div className="space-y-3">
                 {imageUrl ? (
                   <div className="relative aspect-video rounded-2xl overflow-hidden border border-outline-variant/30 bg-surface-container-low">
                     <img
                       src={imageUrl}
-                      alt="Preview"
+                      alt={t('addMealModal.imagePreview')}
                       className="w-full h-full object-cover"
                       referrerPolicy="no-referrer"
                     />
@@ -582,7 +584,7 @@ export default function AddMealModal({
                     ) : (
                       <>
                         <ImageIcon className="w-10 h-10 mb-2 opacity-30" />
-                        <p className="text-sm">No image selected</p>
+                        <p className="text-sm">{t('addMealModal.texts.noImage')}</p>
                       </>
                     )}
                   </div>
@@ -592,7 +594,7 @@ export default function AddMealModal({
                   <div className="grid grid-cols-3 gap-2">
                     <label className="flex flex-col items-center justify-center p-3 bg-surface-container-lowest border border-outline-variant/30 rounded-2xl hover:bg-surface-container-low dark:hover:bg-surface-container-highest cursor-pointer transition-colors">
                       <Upload className="w-5 h-5 mb-1 text-primary-container dark:text-primary-fixed-dim" />
-                      <span className="text-xs font-display font-semibold">Upload</span>
+                      <span className="text-xs font-display font-semibold">{t('addMealModal.buttons.upload')}</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -606,16 +608,16 @@ export default function AddMealModal({
                       className="flex flex-col items-center justify-center p-3 bg-surface-container-lowest border border-outline-variant/30 rounded-2xl hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors"
                     >
                       <Camera className="w-5 h-5 mb-1 text-primary-container dark:text-primary-fixed-dim" />
-                      <span className="text-xs font-display font-semibold">Camera</span>
+                      <span className="text-xs font-display font-semibold">{t('addMealModal.buttons.camera')}</span>
                     </button>
                     <div className="relative group">
                       <div className="flex flex-col items-center justify-center p-3 bg-surface-container-lowest border border-outline-variant/30 rounded-2xl hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors">
                         <LinkIcon className="w-5 h-5 mb-1 text-primary-container dark:text-primary-fixed-dim" />
-                        <span className="text-xs font-display font-semibold">URL</span>
+                        <span className="text-xs font-display font-semibold">{t('addMealModal.buttons.url')}</span>
                       </div>
                       <input
                         type="url"
-                        placeholder="Paste image URL..."
+                        placeholder={t('addMealModal.fields.imageUrl.placeholder')}
                         value={imageUrl}
                         onChange={(e) => setImageUrl(e.target.value)}
                         className="absolute inset-0 opacity-0 focus:opacity-100 w-full h-full px-3 py-2 border border-primary rounded-2xl bg-surface-container-lowest text-xs transition-opacity"
@@ -634,13 +636,13 @@ export default function AddMealModal({
               />
             ) : (
               <p className="text-xs text-on-surface-variant">
-                Using saved response language from Preferences for AI instructions and nutrition.
+                {t('addMealModal.responseLangMsg')}
               </p>
             )}
 
             <div>
               <div className="flex justify-between items-center mb-3">
-                <label className={fieldLabel + ' mb-0'}>Instructions</label>
+                <label className={fieldLabel + ' mb-0'}>{t('addMealModal.fields.instructions.label')}</label>
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
@@ -653,14 +655,14 @@ export default function AddMealModal({
                     ) : (
                       <Sparkles className="w-3.5 h-3.5" />
                     )}
-                    Fetch Instructions
+                    {t('addMealModal.links.fetchInstructions')}
                   </button>
                   <button
                     type="button"
                     onClick={() => setInstructions([...instructions, ''])}
                     className="text-xs font-display font-bold text-primary-container dark:text-primary-fixed-dim hover:underline inline-flex items-center gap-1"
                   >
-                    <Plus className="w-3.5 h-3.5" /> Add Step
+                    <Plus className="w-3.5 h-3.5" /> {t('addMealModal.links.addStep')}
                   </button>
                 </div>
               </div>
@@ -680,7 +682,7 @@ export default function AddMealModal({
                         newInst[index] = e.target.value;
                         setInstructions(newInst);
                       }}
-                      placeholder={`Step ${index + 1}`}
+                      placeholder={t('addMealModal.fields.step.placeholder') + ` ${index + 1}`}
                       rows={2}
                       className={`${inputClass} resize-y`}
                     />
@@ -697,7 +699,7 @@ export default function AddMealModal({
                 ))}
                 {instructions.length === 0 && (
                   <div className="text-sm text-on-surface-variant italic text-center py-5 bg-surface-container-low dark:bg-surface-container-high/50 rounded-2xl border border-dashed border-outline-variant/40">
-                    No instructions added yet. Click "Add Step" to begin.
+                    {t('addMealModal.texts.noInstructions')}
                   </div>
                 )}
               </div>
@@ -705,7 +707,7 @@ export default function AddMealModal({
 
             <div ref={ingredientsSectionRef}>
               <div className="flex justify-between items-center mb-3">
-                <label className={fieldLabel + ' mb-0'}>Ingredients</label>
+                <label className={fieldLabel + ' mb-0'}>{t('addMealModal.fields.ingredients.label')}</label>
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
@@ -718,14 +720,14 @@ export default function AddMealModal({
                     ) : (
                       <Sparkles className="w-3.5 h-3.5" />
                     )}
-                    Estimate Nutrition
+                    {t('addMealModal.links.estimate')}
                   </button>
                   <button
                     type="button"
                     onClick={handleAddIngredient}
                     className="text-xs font-display font-bold text-primary-container dark:text-primary-fixed-dim hover:underline inline-flex items-center gap-1"
                   >
-                    <Plus className="w-3.5 h-3.5" /> Add Ingredient
+                    <Plus className="w-3.5 h-3.5" /> {t('addMealModal.links.addIngredient')}
                   </button>
                 </div>
               </div>
@@ -741,7 +743,7 @@ export default function AddMealModal({
                     <div className="flex flex-wrap gap-2 items-start">
                       <input
                         type="text"
-                        placeholder="Ingredient name"
+                        placeholder={t('addMealModal.fields.ingredient.placeholder')}
                         value={ing.name || ''}
                         onChange={(e) => handleIngredientChange(index, 'name', e.target.value)}
                         className={`${inputClass} flex-1 min-w-[160px]`}
@@ -756,7 +758,7 @@ export default function AddMealModal({
                         type="number"
                         min="0"
                         step="0.01"
-                        placeholder="Amount"
+                        placeholder={t('addMealModal.fields.amount.placeholder')}
                         value={ing.amount || ''}
                         onChange={(e) =>
                           handleIngredientChange(index, 'amount', parseFloat(e.target.value))
@@ -784,26 +786,26 @@ export default function AddMealModal({
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       <NutrientInput
-                        placeholder="Calories"
-                        label="Calories"
+                        placeholder={t('addMealModal.fields.calories.placeholder')}
+                        label={t('addMealModal.fields.calories.label')}
                         value={ing.calories}
                         onChange={(v) => handleIngredientChange(index, 'calories', v)}
                       />
                       <NutrientInput
-                        placeholder="Protein (g)"
-                        label="Protein"
+                        placeholder={t('addMealModal.fields.protein.placeholder')}
+                        label={t('addMealModal.fields.protein.label')}
                         value={ing.protein}
                         onChange={(v) => handleIngredientChange(index, 'protein', v)}
                       />
                       <NutrientInput
-                        placeholder="Fat (g)"
-                        label="Fat"
+                        placeholder={t('addMealModal.fields.fat.placeholder')}
+                        label={t('addMealModal.fields.fat.label')}
                         value={ing.fat}
                         onChange={(v) => handleIngredientChange(index, 'fat', v)}
                       />
                       <NutrientInput
-                        placeholder="Carbs (g)"
-                        label="Carbs"
+                        placeholder={t('addMealModal.fields.carbs.placeholder')}
+                        label={t('addMealModal.fields.carbs.label')}
                         value={ing.carbs}
                         onChange={(v) => handleIngredientChange(index, 'carbs', v)}
                       />
@@ -821,7 +823,7 @@ export default function AddMealModal({
             onClick={onClose}
             className="px-5 py-2.5 text-on-surface-variant font-display font-semibold text-sm rounded-full hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors"
           >
-            Cancel
+            {t('addMealModal.buttons.cancel')}
           </button>
           <button
             onClick={handleSubmit}
@@ -829,7 +831,7 @@ export default function AddMealModal({
             className="px-5 py-2.5 bg-gradient-to-br from-primary to-primary-container text-on-primary font-display font-semibold text-sm rounded-full hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2 shadow-sm"
           >
             <Save className="w-4 h-4" />
-            {editingMeal && editingMeal.id ? 'Save Changes' : 'Add Meal'}
+            {editingMeal && editingMeal.id ? t('addMealModal.buttons.save') : t('addMealModal.buttons.add')}
           </button>
         </div>
       </div>

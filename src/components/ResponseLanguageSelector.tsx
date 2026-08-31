@@ -4,6 +4,7 @@ import {
   normalizeLanguageInput,
   type ResponseLanguageCode,
 } from '@/ai/response-languages';
+import { useTranslation } from 'react-i18next';
 
 interface ResponseLanguageSelectorProps {
   value: ResponseLanguageCode;
@@ -16,10 +17,12 @@ export default function ResponseLanguageSelector({
   onChange,
   helperText,
 }: ResponseLanguageSelectorProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-3">
       <label className="block text-[11px] font-display font-bold uppercase tracking-widest text-outline">
-        Response language
+        {t('responseLanguageSelector.fields.language.label')}
       </label>
       <select
         value={value}

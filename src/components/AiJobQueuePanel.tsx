@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Sparkles, X } from 'lucide-react';
 import { formatAiServiceLine, useAiJobQueue } from '../context/AiJobQueueContext';
+import { useTranslation } from 'react-i18next';
 
 export default function AiJobQueuePanel() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { jobs, isMinimized, setMinimized, dismissJob, clearCompleted } = useAiJobQueue();
 
@@ -26,10 +28,10 @@ export default function AiJobQueuePanel() {
           onClick={() => setMinimized(false)}
           className="pointer-events-auto flex items-center gap-2 rounded-full border border-outline-variant/40 bg-surface-container-lowest/95 px-4 py-2.5 text-sm font-display font-semibold text-on-surface shadow-lg backdrop-blur-md dark:border-outline-variant dark:bg-surface-container-low/95 dark:text-on-surface"
           aria-expanded={false}
-          aria-label={`AI jobs: ${runningCount} running, ${jobs.length} total. Expand queue.`}
+          aria-label={t('aiJobQueuePanel.labels.jobs', {runningCount, length: jobs.length})}
         >
           <Sparkles className="h-4 w-4 text-primary-container dark:text-primary-fixed-dim" />
-          <span>AI jobs</span>
+          <span>{t('aiJobQueuePanel.jobs')}</span>
           {runningCount > 0 ? (
             <span className="rounded-full bg-primary-container px-2 py-0.5 text-[11px] text-on-primary">{runningCount}</span>
           ) : (
@@ -46,15 +48,17 @@ export default function AiJobQueuePanel() {
       <div
         className="pointer-events-auto w-full max-w-sm overflow-hidden rounded-2xl border border-outline-variant/40 bg-surface-container-lowest/95 shadow-xl backdrop-blur-md dark:border-outline-variant dark:bg-surface-container-low/95"
         role="region"
-        aria-label="AI job queue"
+        aria-label={t('aiJobQueuePanel.labels.queue')}
       >
         <div className="flex items-center justify-between gap-2 border-b border-outline-variant/30 px-4 py-3 dark:border-outline-variant/40">
           <div className="flex items-center gap-2 min-w-0">
             <Sparkles className="h-4 w-4 shrink-0 text-primary-container dark:text-primary-fixed-dim" />
-            <span className="truncate font-display text-sm font-bold text-on-surface">AI jobs</span>
+            <span className="truncate font-display text-sm font-bold text-on-surface">
+              {t('aiJobQueuePanel.jobs')}
+            </span>
             {runningCount > 0 ? (
               <span className="shrink-0 rounded-full bg-primary-container/15 px-2 py-0.5 text-[10px] font-bold text-primary-container dark:bg-primary-fixed-dim/20 dark:text-primary-fixed-dim">
-                {runningCount} running
+                {runningCount} {t('aiJobQueuePanel.running')}
               </span>
             ) : null}
           </div>
@@ -65,14 +69,14 @@ export default function AiJobQueuePanel() {
                 onClick={clearCompleted}
                 className="rounded-full px-2 py-1 text-[11px] font-semibold text-primary-container hover:bg-primary-container/10 dark:text-primary-fixed-dim dark:hover:bg-primary-fixed-dim/10"
               >
-                Clear done
+                {t('aiJobQueuePanel.buttons.clear')}
               </button>
             ) : null}
             <button
               type="button"
               onClick={() => setMinimized(true)}
               className="rounded-full p-1.5 text-outline hover:bg-surface-container-high dark:text-outline dark:hover:bg-surface-container-high"
-              aria-label="Minimize AI job queue"
+              aria-label={t('aiJobQueuePanel.labels.minimize')}
             >
               <ChevronUp className="h-4 w-4" />
             </button>
@@ -120,12 +124,12 @@ export default function AiJobQueuePanel() {
                     </p>
                     {job.languageLabel ? (
                       <p className="mt-0.5 truncate text-[11px] text-outline">
-                        Language · {job.languageLabel}
+                        {t('aiJobQueuePanel.language')} · {job.languageLabel}
                       </p>
                     ) : null}
                     {canOpenRestore ? (
                       <p className="mt-1 text-[11px] font-semibold text-primary-container dark:text-primary-fixed-dim">
-                        Click to open in editor
+                        {t('aiJobQueuePanel.click')}
                       </p>
                     ) : null}
                   </div>
@@ -150,7 +154,7 @@ export default function AiJobQueuePanel() {
                     type="button"
                     className={rowClass}
                     onClick={() => openRestore(job.id)}
-                    aria-label={`${job.title}: open result in app`}
+                    aria-label={t('aiJobQueuePanel.labels.result', {title: job.title})}
                   >
                     {inner}
                   </button>
@@ -165,7 +169,7 @@ export default function AiJobQueuePanel() {
                     dismissJob(job.id);
                   }}
                   className="absolute right-3 top-3 rounded-full p-1 text-outline hover:bg-surface-container-high dark:text-outline dark:hover:bg-surface-container-high"
-                  aria-label="Dismiss job"
+                  aria-label={t('aiJobQueuePanel.labels.dismiss')}
                 >
                   <X className="h-4 w-4" />
                 </button>

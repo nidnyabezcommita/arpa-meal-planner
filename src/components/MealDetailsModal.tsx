@@ -20,6 +20,7 @@ import {
   getScaledMealNutritionTotals,
   resolveEffectiveServings,
 } from '../lib/meal-scaling';
+import { useTranslation } from 'react-i18next';
 
 interface MealDetailsModalProps {
   isOpen: boolean;
@@ -29,6 +30,7 @@ interface MealDetailsModalProps {
 }
 
 export default function MealDetailsModal({ isOpen, onClose, onEdit, meal }: MealDetailsModalProps) {
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
   const [displayServings, setDisplayServings] = useState(4);
 
@@ -64,7 +66,7 @@ export default function MealDetailsModal({ isOpen, onClose, onEdit, meal }: Meal
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center text-outline">
               <ImageIcon className="w-12 h-12 opacity-40 mb-2" />
-              <span className="font-display font-medium">No image available</span>
+              <span className="font-display font-medium">{t('mealDetailsModal.noImageText')}</span>
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
@@ -95,7 +97,7 @@ export default function MealDetailsModal({ isOpen, onClose, onEdit, meal }: Meal
               <div className="flex flex-wrap items-center gap-5 text-on-surface-variant text-sm">
                 <span className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-primary-container" />
-                  {meal.ingredients.length} ingredients
+                  {meal.ingredients.length} {t('mealDetailsModal.ingredients')}
                 </span>
                 <span className="flex items-center gap-2">
                   <UsersIcon className="w-4 h-4 text-primary-container" />
@@ -103,7 +105,7 @@ export default function MealDetailsModal({ isOpen, onClose, onEdit, meal }: Meal
                     <button
                       onClick={() => setDisplayServings((prev) => Math.max(1, prev - 1))}
                       className="w-6 h-6 rounded-full bg-surface-container-low dark:bg-surface-container-highest text-on-surface text-sm font-bold hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors"
-                      aria-label="Decrease servings"
+                      aria-label={t('planner.buttons.decrease')}
                     >
                       -
                     </button>
@@ -113,14 +115,14 @@ export default function MealDetailsModal({ isOpen, onClose, onEdit, meal }: Meal
                     <button
                       onClick={() => setDisplayServings((prev) => Math.min(100, prev + 1))}
                       className="w-6 h-6 rounded-full bg-surface-container-low dark:bg-surface-container-highest text-on-surface text-sm font-bold hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors"
-                      aria-label="Increase servings"
+                      aria-label={t('planner.buttons.increase')}
                     >
                       +
                     </button>
                   </span>
-                  servings
+                  {t('mealDetailsModal.servings')}
                   {effectiveServings !== baseServings ? (
-                    <span className="text-xs text-outline">(base {baseServings})</span>
+                    <span className="text-xs text-outline">({t('mealDetailsModal.base')} {baseServings})</span>
                   ) : null}
                 </span>
                 {totalCalories > 0 && (
@@ -143,7 +145,7 @@ export default function MealDetailsModal({ isOpen, onClose, onEdit, meal }: Meal
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary-container/10 text-primary-container dark:bg-primary-fixed-dim/10 dark:text-primary-fixed-dim hover:opacity-90 transition-opacity font-display font-semibold text-sm"
                 >
                   <Edit2 className="w-4 h-4" />
-                  Edit Meal
+                  {t('mealDetailsModal.edit')}
                 </button>
                 {meal.source_url ? (
                   <a
@@ -153,7 +155,7 @@ export default function MealDetailsModal({ isOpen, onClose, onEdit, meal }: Meal
                     className="inline-flex items-center gap-1.5 text-primary-container dark:text-primary-fixed-dim hover:underline font-display font-semibold text-sm"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    View Original Recipe
+                    {t('mealDetailsModal.viewOriginal')}
                   </a>
                 ) : null}
               </div>
@@ -161,10 +163,10 @@ export default function MealDetailsModal({ isOpen, onClose, onEdit, meal }: Meal
 
             {(totalCalories > 0 || totalProtein > 0) && (
               <div className="grid grid-cols-4 gap-2 bg-surface-container-low dark:bg-surface-container-high/60 p-3 rounded-2xl text-center">
-                <NutrientStat label="Cal" value={Math.round(totalCalories)} />
-                <NutrientStat label="Pro" value={`${totalProtein.toFixed(0)}g`} />
-                <NutrientStat label="Fat" value={`${totalFat.toFixed(0)}g`} />
-                <NutrientStat label="Carb" value={`${totalCarbs.toFixed(0)}g`} />
+                <NutrientStat label={t('mealDetailsModal.nutrients.calories')} value={Math.round(totalCalories)} />
+                <NutrientStat label={t('mealDetailsModal.nutrients.protein')} value={`${totalProtein.toFixed(0)}g`} />
+                <NutrientStat label={t('mealDetailsModal.nutrients.fat')} value={`${totalFat.toFixed(0)}g`} />
+                <NutrientStat label={t('mealDetailsModal.nutrients.carbs')} value={`${totalCarbs.toFixed(0)}g`} />
               </div>
             )}
           </div>
@@ -173,7 +175,7 @@ export default function MealDetailsModal({ isOpen, onClose, onEdit, meal }: Meal
             <aside className="lg:col-span-1 space-y-4">
               <h3 className="text-lg font-display font-bold text-primary-container dark:text-primary-fixed-dim flex items-center gap-2">
                 <ChefHat className="w-5 h-5" />
-                Ingredients
+                {t('mealDetailsModal.ingredientsList.title')}
               </h3>
               <ul className="space-y-3 bg-surface-container-low/95 rounded-2xl p-4">
                 {scaledIngredients.map((ing, i) => (
@@ -192,13 +194,13 @@ export default function MealDetailsModal({ isOpen, onClose, onEdit, meal }: Meal
             <section className="lg:col-span-2 space-y-4">
               <h3 className="text-lg font-display font-bold text-primary-container dark:text-primary-fixed-dim flex items-center gap-2">
                 <Clock className="w-5 h-5" />
-                Instructions
+                {t('mealDetailsModal.instructions.title')}
               </h3>
               {meal.instructions && meal.instructions.length > 0 ? (
                 <div className="relative bg-surface-container-lowest/50 rounded-[2rem] p-6 overflow-hidden min-h-[280px] flex flex-col border border-outline-variant/15">
                   <div className="flex justify-between items-center mb-6">
                     <span className="text-xs font-display font-bold text-primary-container dark:text-primary-fixed-dim uppercase tracking-widest">
-                      Step {currentStep + 1} of {meal.instructions.length}
+                      {t('mealDetailsModal.instructions.step', {number: currentStep + 1, count: meal.instructions.length})}
                     </span>
                     <div className="flex gap-1.5">
                       {meal.instructions.map((_, idx) => (
@@ -240,7 +242,7 @@ export default function MealDetailsModal({ isOpen, onClose, onEdit, meal }: Meal
                       disabled={currentStep === 0}
                       className="inline-flex items-center gap-1 text-sm font-display font-semibold px-4 py-2.5 rounded-full text-on-surface-variant hover:bg-surface-container-high disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
                     >
-                      <ChevronLeft className="w-4 h-4" /> Previous
+                      <ChevronLeft className="w-4 h-4" /> {t('mealDetailsModal.instructions.prev')}
                     </button>
                     <button
                       onClick={() =>
@@ -249,14 +251,14 @@ export default function MealDetailsModal({ isOpen, onClose, onEdit, meal }: Meal
                       disabled={currentStep === meal.instructions.length - 1}
                       className="inline-flex items-center gap-1 text-sm font-display font-semibold px-5 py-2.5 rounded-full bg-gradient-to-br from-primary to-primary-container text-on-primary hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
                     >
-                      Next <ChevronRight className="w-4 h-4" />
+                      {t('mealDetailsModal.instructions.next')} <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
               ) : (
                 <div className="bg-surface-container-low dark:bg-surface-container-high/50 border border-dashed border-outline-variant/40 rounded-2xl p-6 text-center text-on-surface-variant">
-                  <p>No instructions available for this meal.</p>
-                  <p className="text-xs mt-1">Edit the meal to add step-by-step directions.</p>
+                  <p>{t('mealDetailsModal.instructions.empty.title')}</p>
+                  <p className="text-xs mt-1">{t('mealDetailsModal.instructions.empty.subtitle')}</p>
                 </div>
               )}
             </section>

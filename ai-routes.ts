@@ -368,6 +368,7 @@ Ensure instructions are clear, sequential cooking steps.`;
       if (!data.meals || !Array.isArray(data.meals) || data.meals.length !== 7) {
         return res.status(422).json({ error: 'Failed to generate a complete 7-day meal plan. Please try again.' });
       }
+      const meals = data.meals;
 
       const insertMeal = db.prepare(
         'INSERT INTO meals (family_id, name, tag, instructions, source_url, image_url, servings) VALUES (?, ?, ?, ?, ?, ?, ?)'
@@ -379,7 +380,7 @@ Ensure instructions are clear, sequential cooking steps.`;
 
       const run = db.transaction(() => {
         for (let i = 0; i < 7; i++) {
-          const meal = data.meals[i];
+          const meal = meals[i];
           const dateStr = format(addDays(start, i), 'yyyy-MM-dd');
           const instructionsStr = null;
           const mealResult = insertMeal.run(
