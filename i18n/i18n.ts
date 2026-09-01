@@ -3,20 +3,22 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 
 import en from './translations/en.json';
+import ru from './translations/ru.json';
 import tr from './translations/tr.json';
 
-export const UI_LANGUAGES = ['en', 'tr'] as const;
+export const UI_LANGUAGES = ['en', 'ru', 'tr'] as const;
 export type UiLanguage = (typeof UI_LANGUAGES)[number];
 export const defaultNS = 'translation';
 
 export const resources = {
   en: { translation: en },
+  ru: { translation: ru },
   tr: { translation: tr },
 } as const;
 
 function updateDocumentLanguage(language: string) {
   if (typeof document === 'undefined') return;
-  document.documentElement.lang = language.startsWith('tr') ? 'tr' : 'en';
+  document.documentElement.lang = language.startsWith('ru') ? 'ru' : 'en';
 }
 
 i18n
