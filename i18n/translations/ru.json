@@ -90,7 +90,7 @@
       "instructions": "Инструкции уже существуют. Сначала удалите их, чтобы заменить.",
       "meal": "Ошибка при сохранении рецепта",
       "fetchInstructions": "Не удалось получить инструкции.",
-      "noInstructions": "No instructions were returned."
+      "noInstructions": "Никаких инструкций получено не было."
     },
     "nutrition": "Поля, касающиеся пищевой ценности, обновлены на основе оценок ИИ.",
     "responseLangMsg": "Используется сохраненный язык ответов из настроек для инструкций ИИ и информации о питании.",
@@ -138,7 +138,7 @@
       "grocery": "Список покупок",
       "pantry": "Хранение",
       "familySync": "Поделиться",
-      "personal": "Personal",
+      "personal": "",
       "chef": {
         "title": "Шеф",
         "subtitle": "Профиль & настройки"
@@ -281,10 +281,10 @@
     "AItext": "Использовать ИИ, сохраненный в настройках.",
     "langText": "Использовать язык рецепта, сохраненный в настройках",
     "dietary": "Тип диеты",
-    "jobTitle": "Generate weekly plan",
+    "jobTitle": "Сгенерировать план на неделю",
     "errors": {
-      "generate": "Failed to generate meal plan",
-      "default": "An error occurred while generating the meal plan."
+      "generate": "Не удалось сгенерировать план питания.",
+      "default": "Произошла ошибка при создании плана питания."
     },   
     "buttons": {
       "cancel": "Отмена",
@@ -312,28 +312,28 @@
     },
     "title2": "Список покупок",
     "measure": {
-      "unit_one": "Unit",
-      "unit_other": "Units"
+      "unit_one": "Штука",
+      "unit_other": "Штук"
     },
     "categories": {
-      "dairyCold": "Dairy & Cold",
-      "freshProduce": "Fresh Produce",
-      "meatSeafood": "Meat & Seafood",
-      "bakery": "Bakery",
-      "pantry": "Pantry",
-      "frozen": "Frozen"
+      "dairyCold": "Молочные и охлажденные",
+      "freshProduce": "Свежие продукты",
+      "meatSeafood": "Мясо и морепродукты",
+      "bakery": "Выпечка",
+      "pantry": "Бакалея",
+      "frozen": "Заморозка"
     },
     "pdf": {
-      "title": "Grocery List",
-      "week": "For week of {{from}} - {{to}}",
-      "yes": "Yes",
-      "no": "No",
+      "title": "Список покупок",
+      "week": "На неделю {{from}} - {{to}}",
+      "yes": "Да",
+      "no": "Нет",
       "headers": {
-        "done": "Got it?",
-        "item": "Item",
-        "amount": "Amount"
+        "done": "Понятно?",
+        "item": "Продукт",
+        "amount": "Количество"
       },
-      "filename": "Grocery-List"
+      "filename": "Список-продуктов"
     },
     "empty": {
       "title": "Ваш список пуст",
@@ -349,8 +349,8 @@
     "mergePopup": {
       "title": "Объединить одинаковые названия",
       "empty": "В названиях близких совпадений не найдено.",
-      "suggestedGroup": "Suggested Group",
-      "selectAll": "Select All",
+      "suggestedGroup": "Предлагаемая группа",
+      "selectAll": "Выбрать все",
       "fields": {
         "addItem": {
           "label": "Добавить продукт вручную",
@@ -362,13 +362,13 @@
         }
       },
       "noMatches": "Нет дополнительных совпадений.",
-      "confirm": "Merge {{count}} names into \"{{target}}\"? This updates meal ingredients and pantry names.",
-      "success": "Merged {{count}} names into \"{{target}}\".",
+      "confirm": "Объединить {{count}} названий в \"{{target}}\"? Это обновит название ингредиентов блюд и продуктов в хранилище.",
+      "success": "Объединить {{count}} названий в \"{{target}}\".",
       "errors": {
-        "selectTwo": "Select at least 2 names to merge.",
-        "selectTarget": "Select a valid target name from the selected items.",
-        "endpoint": "Merge endpoint is unavailable (404). Restart the dev server so the latest backend routes load.",
-        "default": "Failed to merge names"
+        "selectTwo": "Выберите как минимум 2 имени для объединения.",
+        "selectTarget": "Выберите допустимое имя цели из выбранных элементов.",
+        "endpoint": "Конечная точка слияния недоступна (404). Перезапустите сервер разработки, чтобы загрузить последние маршруты бэкэнда.",
+        "default": "Ошибка при объединении названий"
       },
       "buttons": {
         "close": "Закрыть",
@@ -380,11 +380,11 @@
       "AItext": "Используется сохраненный вариант ИИ из настроек.",
       "langText": "Используется сохраненный язык ответа из настроек.",
       "jobTitle": "Smart-group groceries",
-      "itemCount": "Grocery list ({{count}} items)",
+      "itemCount": "Список покупок ({{count}} продуктов)",
       "errors": {
-        "request": "Grouping request failed",
-        "rateLimit": "Bebü Bot is a bit busy right now (rate limit reached). I've applied some basic grouping for you!",
-        "fallback": "Something went wrong while grouping. I've tried my best to categorize common items."
+        "request": "Запрос на группировку не выполнен.",
+        "rateLimit": "Помощник сейчас немного занят (достигнут лимит запросов). Я применил для вас базовую группировку!",
+        "fallback": "Что-то пошло не так при группировке. Я изо всех сил старался классифицировать распространенные предметы."
       },
       "buttons": {
         "close": "Закрыть",
@@ -415,7 +415,7 @@
     "errors": {
       "onlyGoogle": "В настоящее время для генерации изображений поддерживается только провайдер Google.",
       "default": "Ошибка",
-      "noImage": "No image was returned"
+      "noImage": "Ни одно изображение не было возвращено"
     }
   },
   "importRecipeModal": {
@@ -459,10 +459,10 @@
     "edit": "Редактировать рецепт",
     "viewOriginal": "Посмотреть оригинальный рецепт",
     "nutrients": {
-      "calories": "Cal",
-      "protein": "Pro",
-      "fat": "Fat",
-      "carbs": "Carb"
+      "calories": "Ккал",
+      "protein": "Б",
+      "fat": "Ж",
+      "carbs": "У"
     },
     "ingredientsList": {
       "title": "Ингредиенты"
@@ -529,9 +529,9 @@
     "today": "Сегодня",
     "select": "Выберите блюдо…",
     "servings": "порций",
-    "dropHere": "Drop meal here",
-    "moveAria": "Move {{name}} to another day",
-    "mealOptionServings": "{{count}} servings",
+    "dropHere": "Перетаскивай блюда сюда",
+    "moveAria": "Перенести {{name}} на другой день",
+    "mealOptionServings": "{{count}} порций",
     "discovery": {
       "title": "Рецепты",
       "subtitle": "Перетащите рецепты в календарь",
@@ -540,7 +540,7 @@
       },
       "empty": "Рецепты, соответствующие вашему запросу, не найдены. Попробуйте очистить фильтры.",
       "all": "Все",
-      "count": "{{ingredients}} ingredients / {{servings}} servings"
+      "count": "{{ingredients}} ингредиентов / {{servings}} порций"
     },
     "errors": {
       "move": "Ошибка при перемещении рецепта",
@@ -551,9 +551,9 @@
     "title": "Настройки",
     "subtitle": "Настройки по умолчанию для новых рецептов, расположения элементов календаря, внешнего вида и поведения ИИ.",
     "interfaceLanguage": {
-      "title": "Interface Language",
-      "text": "Choose the language used throughout ARPA. Your choice is saved in this browser.",
-      "label": "Language"
+      "title": "Язык интерфейса",
+      "text": "Выберите язык, используемый на платформе ARPA. Ваш выбор будет сохранен в этом браузере.",
+      "label": "Язык"
     },
     "meals": {
       "title": "Рецепты",
